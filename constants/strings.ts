@@ -27,6 +27,9 @@ Just type your query like so [@NMDergBot dragon gryphon today random safe] they 
 The words dragon, gryphon, today, random, and safe will return images with <b><u>dragons</u></b> and <b><u>gryphons</u></b> in them that were uploaded <b><u>today</u></b> that are <b><u>randomly</u></b> ordered with a rating of <b><u>safe</u></b>
 
 You can find a list of valid tags <a href="https://e621.net/tags">here</a> you can mix and match the key words and the tags in any way you like!
+
+<b><u>LIMITATIONS!!</u></b>
+Due to limitations in Telegram posts with the swf and webp file types won't show up in the bot.
 `;
 
 export const infoString = `
