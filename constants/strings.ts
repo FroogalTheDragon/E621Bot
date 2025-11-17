@@ -3,7 +3,7 @@ Bot Started <b>This is an <u>Explicit 18+</u> bot</b> and should only be used by
 `;
 
 export const helpString = `
-Hello!  Welcome to the NMDergBot!  This is a bot that allows you to browse and share images from the furry image hosting service <a href="https://www.e621.net">e621</a>, help you find your favorite furry art to share with your furry friends!
+Hello!  Welcome to the NMDergBot!  This is a bot that allows you to browse and share images from the furry image hosting service <a href="https://www.e621.net">e621</a>, it can help you find your favorite furry art to share with your furry friends!
 NMDergBot is an inline telegram bot meaning that you communicate with it via @NMDergBot [query].  You can use a simple query format to search with this bot as follows:
   
 <b>Keywords:</b>
