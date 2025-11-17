@@ -31,20 +31,28 @@ if (import.meta.main) {
 
   // INLINE QUERIES
   yiffBot.on("inline_query", async (ctx) => {
+    // Assume we will be getting pages of results
+    let moreApiPages = true;
     const request = await yiffBot.parseInlineQuery(
       ctx.inlineQuery.query,
       new E621RequestBuilder(),
     );
+    // Handle offset
 
-    // Handle offset here?
+    // Get the current offset from Telegram
     const currentTelegramOffset = ctx.inlineQuery.offset
       ? parseInt(ctx.inlineQuery.offset, 10)
       : 0;
+
+    // Calculate the page number to pull from the API
     let apiPageToFetch = Math.floor(currentTelegramOffset / API_PAGE_SIZE) + 1;
-    const offsetInCurrentApiPage = currentTelegramOffset % API_PAGE_SIZE;
+
+    // Set our page number in the URL Builder
     request.page = apiPageToFetch;
+
+    // The offset in the current batch of results
+    const offsetInCurrentApiPage = currentTelegramOffset % API_PAGE_SIZE;
     const inlineQueryResults: Array<InlineQueryResult> = [];
-    let moreApiPages = true;
     console.log(request.page);
     while (
       inlineQueryResults.length < (IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
