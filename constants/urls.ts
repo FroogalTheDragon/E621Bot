@@ -1,5 +1,5 @@
-export const baseUrlTags: string = "https://e621.net/posts.json?tags="; // Base e621 url
 export const baseUrl: string = "https://e621.net/posts";
+export const baseUrlTags: string = baseUrl.concat(".json"); // Base e621 url
 export const rating = { // The rating of a post or a rating to search by
     safe: "rating:s",
     questionable: "rating:q",

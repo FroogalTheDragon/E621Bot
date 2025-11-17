@@ -1,15 +1,17 @@
 import * as urls from "../constants/urls.ts";
 
 export class E621RequestBuilder {
+  limit?: number;
   date?: string;
+  page?: number
   tags?: string[];
   fileType?: string;
   rating?: string;
-  limit?: string;
   order?: string;
 
   constructor(
-    limit?: string, // How many images to load at a time
+    limit: number = 320, // How many images to load at a time
+    page: number = 1,
     tags?: string[], // Tags Image, artist, species ALL THE TAGS!!
     date?: string, // Date to pull images from
     fileType?: string, // File type to search by
@@ -17,6 +19,7 @@ export class E621RequestBuilder {
     order?: string, // The order to display the images
   ) {
     this.date = date;
+    this.page = page;
     this.tags = tags;
     this.fileType = fileType;
     this.rating = rating;
@@ -38,12 +41,12 @@ export class E621RequestBuilder {
       if (tags[i] == null) continue;
       tagString += tags[i] + "+";
     }
-    if (tagString.startsWith('+')) tagString.substring(1);
+    if (tagString.startsWith('+')) tagString = tagString.substring(1);
     return tagString.slice(0, -1); // Remove the trailing + the building process
   }
 
   buildUrl() {
-    return `${urls.baseUrlTags}${this.tagString()}&limit=${this.limit}`;
+    return `${urls.baseUrlTags}?page=${this.page}&tags=${this.tagString()}&limit=${this.limit}`;
   }
 
   getFileExtensions(file: string) {
