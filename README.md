@@ -7,7 +7,12 @@
 Hello!  Welcome to the NMDergBot!  This is a bot that allows you to browse and share images from the furry image hosting service [e621]("https://www.e621.net"), help you find your favorite furry art to share with your furry friends!
 NMDergBot is an inline telegram bot meaning that you communicate with it via `@NMDergBot [query]`.  You can use a simple query format to search with this bot as follows:
   
-**Keywords:**
+# Searching with Keywords:
+
+This bot has a set of keywords that can be used to augment the results of your query.  They can be used anywhere in the query.
+
+You can use these key words in combination with tags to search anything you want on [e621]("https://www.e621.net").
+
 **today** - Will get you the images uploaded today
 **yesterday** - Will get you images uploaded yesterday
 **YYYY-MM-DD**</u></b>** - Will get you images on the date provided
@@ -19,13 +24,11 @@ NMDergBot is an inline telegram bot meaning that you communicate with it via `@N
 **questionable** - Will get you images rated **questionable**
 **explicit** - Will get you images rated **explicit**
 
-This bot has a set of keywords that can be used to augment the results of your query.  They can be used anywhere in the query.
-
-You can use these key words in combination with tags to search anything you want on [e621]("https://www.e621.net").
+# Searching with Tags and Keywords:
 
 Just type your query like so `@NMDergBot dragon gryphon today random safe` they are not case sensitive but must be **space seperated**!
 
-The words dragon, gryphon, today, random, and safe will return images with **dragons** and **gryphons** in them that were uploaded **today** that are **randomly** ordered with a rating of **safe**
+The words **dragon**, **gryphon**, **today**, **random**, and **safe** will return images with **dragons** and **gryphons** in them that were uploaded **today** that are **randomly** ordered with a rating of **safe**
 
 You can find a list of valid tags [e621]("https://www.e621.net") you can mix and match the key words and the tags in any way you like!
 
