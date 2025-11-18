@@ -22,3 +22,21 @@ Just type your query like so `@NMDergBot dragon gryphon today random safe` they 
 The words dragon, gryphon, today, random, and safe will return images with **dragons** and **gryphons** in them that were uploaded **today** that are **randomly** ordered with a rating of **safe**
 
 You can find a list of valid tags [e621]("https://www.e621.net") you can mix and match the key words and the tags in any way you like!
+
+# How do I setup the bot?
+If you want to run you own version of the bot you can download the source code.
+
+## Make sure you have Deno installed!
+Once you download the source code and you have [Deno]("https://deno.com/") installed you need to make a file to store your API keys in.
+
+## API Keys
+You should have gotten an API key from the Bot Father on Telegram to run your bot, and an E621 API key to get data from e621.  Take those two keys and stick them in a `.txt` file in any order, **nothing else should be in the file except your the API keys!!**.  You can name the text file anything you want just remember where you put it in your file system.
+
+## Run the Bot
+After you:
+    * Download the source code
+    * Install [Deno]("https://deno.com/")
+    * Obtain your API keys
+    * Create a text file containing your api keys
+
+ You are ready to run your bot!  Run the helper script and point it to the text file you created containing your keys.  `./run.sh /path/to/textfile/your_keys.txt`.  The bot should not be running.  Test it by trying to run `/start` in the chat with your bot in Telegram.
