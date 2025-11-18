@@ -1,6 +1,9 @@
 import { Bot } from "grammy";
 import { E621RequestBuilder } from "./E621RequestBuilder.ts";
 
+/**
+ * 
+ */
 export class E621Bot extends Bot {
   telegramtelegramApiKey: string;
   e621ApiKey: string;
@@ -11,29 +14,45 @@ export class E621Bot extends Bot {
     hits: number = 0,
   ) {
     super(telegramApiKey);
-    this.hits = hits;
     this.telegramtelegramApiKey = telegramApiKey;
     this.e621ApiKey = e621ApiKey;
+    this.hits = hits;
   }
 
+  /**
+   * 
+   * @param url url to fetch images from
+   * @returns Promise<Response>
+   */
   async sendRequest(url: string): Promise<Response> {
     const username: string = "Froogal";
     const response = await fetch(url, {
       headers: {
         "Authorization": "Basic " +
-          btoa(`${username}:${Deno.env.get("E621_API_KEY")}`),
+          btoa(`${username}:${this.e621ApiKey}`),
         "User-Agent": `NMDergBot/1.0 (by ${username} on e621)`,
       },
     });
     return response;
   }
 
+  /**
+   * 
+   * @param query 
+   * @param request_builder 
+   * @returns 
+   */
   async parseInlineQuery(
     query: string,
     request_builder: E621RequestBuilder,
   ): Promise<E621RequestBuilder> {
+    // Parse the query string by spaces
     const queryTags: string[] = query.toLowerCase().split(" ");
+
+    // Create an array to store the parsed tags
     const parsedTags = new Array<string>();
+
+    // Check for key words and build key word tags as needed
     for (const tag in queryTags) {
       console.log(queryTags[tag]);
       if (/(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])) {

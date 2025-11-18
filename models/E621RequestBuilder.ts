@@ -1,5 +1,8 @@
 import * as urls from "../constants/urls.ts";
 
+/**
+ * Build an e621 URL based on parameters passed to this class
+ */
 export class E621RequestBuilder {
   limit?: number;
   date?: string;
@@ -9,9 +12,19 @@ export class E621RequestBuilder {
   rating?: string;
   order?: string;
 
+  /**
+   * E621RequestBuilder constructor
+   * @param limit - Limit how many images load
+   * @param page - Set the page number to grab images from
+   * @param tags - Tags the user is searching for
+   * @param date - Date to grab posts from
+   * @param fileType - Set the file type of files to grab
+   * @param rating - Set the rating of the images
+   * @param order - Set the order to load the images in
+   */
   constructor(
     limit: number = 320, // How many images to load at a time
-    page: number = 1,
+    page: number = 1, // The page number to grab images from
     tags?: string[], // Tags Image, artist, species ALL THE TAGS!!
     date?: string, // Date to pull images from
     fileType?: string, // File type to search by
@@ -27,6 +40,11 @@ export class E621RequestBuilder {
     this.order = order;
   }
 
+  /**
+   * This function takes the current state of the buider and creates a tag string
+   * separated by '+' to insert into the url.
+   * @returns string of tags separated by a '+'
+   */
   tagString(): string {
     const tags: Array<string> = Array.prototype.concat(
       this.tags,
@@ -45,10 +63,19 @@ export class E621RequestBuilder {
     return tagString.slice(0, -1); // Remove the trailing + from the building process
   }
 
+  /**
+   * Returns a URL built fromt he current state of the builder itself and a base URL
+   * @returns string URL built from the current state of the builder
+   */
   buildUrl() {
     return `${urls.baseUrlTags}?page=${this.page}&tags=${this.tagString()}&limit=${this.limit}`;
   }
 
+  /**
+   * Get the file extension of the file or url passed to it.
+   * @param file 
+   * @returns string file extension
+   */
   getFileExtensions(file: string) {
     return file.split(".").pop();
   }
