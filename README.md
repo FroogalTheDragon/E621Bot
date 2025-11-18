@@ -34,9 +34,9 @@ You should have gotten an API key from the Bot Father on Telegram to run your bo
 
 ## Run the Bot
 After you:
-    * Download the source code
-    * Install [Deno]("https://deno.com/")
-    * Obtain your API keys
-    * Create a text file containing your api keys
+* Download the source code
+* Install [Deno]("https://deno.com/")
+* Obtain your API keys
+* Create a text file containing your api keys
 
  You are ready to run your bot!  Run the helper script and point it to the text file you created containing your keys.  `./run.sh /path/to/textfile/your_keys.txt`.  The bot should not be running.  Test it by trying to run `/start` in the chat with your bot in Telegram.
