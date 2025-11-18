@@ -2,6 +2,8 @@
 
 **This bot pulls images from a website that hosts images of all ratings from Safe For Work to Sexually Explicit images depicting violence.  As such this bot shouldn't be used by anyone under the age of 18.  Also anyone contributing to this bot must be 18 years of age or older as well!!**
 
+# Now that that's out of the way.  Hi!
+
 Hello!  Welcome to the NMDergBot!  This is a bot that allows you to browse and share images from the furry image hosting service [e621]("https://www.e621.net"), help you find your favorite furry art to share with your furry friends!
 NMDergBot is an inline telegram bot meaning that you communicate with it via `@NMDergBot [query]`.  You can use a simple query format to search with this bot as follows:
   
