@@ -1,10 +1,10 @@
 import { InlineQueryResult } from "grammy/types";
 import { E621Bot } from "./models/E621Bot.ts";
 import { InlineQueryResultBuilder } from "grammy";
-import { helpString, infoString, startString } from "./constants/strings.ts";
 import { E621RequestBuilder } from "./models/E621RequestBuilder.ts";
 import { API_PAGE_SIZE, IMAGE_LOAD_COUNT } from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
+import * as strings from "./constants/strings.ts";
 
 if (import.meta.main) {
   const yiffBot = new E621Bot(
@@ -14,13 +14,13 @@ if (import.meta.main) {
 
   yiffBot.command("start", async (ctx) =>
     await ctx.reply(
-      startString,
+      strings.startString,
       { parse_mode: "HTML" },
     ));
 
   yiffBot.command("info", async (ctx) => {
     await ctx.reply(
-      infoString,
+      strings.infoString,
       { parse_mode: "HTML" },
     );
   });
@@ -30,7 +30,7 @@ if (import.meta.main) {
   });
 
   yiffBot.command("help", async (ctx) => {
-    await ctx.reply(helpString, { parse_mode: "HTML" });
+    await ctx.reply(strings.helpString, { parse_mode: "HTML" });
   });
 
   // INLINE QUERIES
@@ -58,6 +58,8 @@ if (import.meta.main) {
 
     // The offset in the current batch of results
     const offsetInCurrentApiPage = currentTelegramOffset % API_PAGE_SIZE;
+
+    // Create a array to hold the Inline Query Results
     const inlineQueryResults: Array<InlineQueryResult> = [];
     // console.log(request.page);
     while (
@@ -74,7 +76,7 @@ if (import.meta.main) {
       }
       for (const post in yiffJson.posts) {
         switch (yiffJson.posts[post].file.ext) {
-          case ("jpg"): {
+          case (strings.fileTypes.jpg): {
             const result = InlineQueryResultBuilder.photo(
               String(yiffJson.posts[post].id),
               yiffJson.posts[post].file.url,
@@ -82,7 +84,7 @@ if (import.meta.main) {
             inlineQueryResults.push(result);
             break;
           }
-          case ("png"): {
+          case (strings.fileTypes.png): {
             const result = InlineQueryResultBuilder.photo(
               String(yiffJson.posts[post].id),
               yiffJson.posts[post].file.url,
@@ -90,7 +92,7 @@ if (import.meta.main) {
             inlineQueryResults.push(result);
             break;
           }
-          case ("gif"): {
+          case (strings.fileTypes.gif): {
             const result = InlineQueryResultBuilder.gif(
               `${yiffJson.posts[post].id}`,
               yiffJson.posts[post].file.url,
@@ -99,7 +101,7 @@ if (import.meta.main) {
             inlineQueryResults.push(result);
             break;
           }
-          case ("mp4"): {
+          case (strings.fileTypes.mp4): {
             const result = InlineQueryResultBuilder.videoMp4(
               `${yiffJson.posts[post].id}`,
               `${yiffJson.posts[post].tags.artist[0]}`,
@@ -109,7 +111,7 @@ if (import.meta.main) {
             inlineQueryResults.push(result);
             break;
           }
-          case ("webm"): {
+          case (strings.fileTypes.webm): {
             const result = InlineQueryResultBuilder.videoMp4(
               `${yiffJson.posts[post].id}`,
               `${yiffJson.posts[post].tags.artist[0]}`,
