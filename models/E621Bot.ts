@@ -46,7 +46,7 @@ export class E621Bot extends Bot {
         continue;
       }
 
-      if (/(score|favcount|random|hot|)/.test(queryTags[tag])) {
+      if (/(score|favcount|random|hot)/.test(queryTags[tag])) {
         request_builder.order = `order:${queryTags[tag]}`;
         continue;
       }
