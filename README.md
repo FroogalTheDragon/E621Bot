@@ -1,6 +1,6 @@
 # Let's get the important stuff out of the way!
 
-# This bot pulls images from a website that hosts images of all ratings from Safe For Work to Sexually Explicit images depicting violence.  As such this bot shouldn't be used by anyone under the age of 18.  Also anyone contributing to this bot must be 18 years of age or older as well!!
+# This bot pulls images from a website that hosts images of all ratings from images rated SFW to sexually explicit to images depicting violence.  As such this bot shouldn't be used by anyone under the age of 18.  Also anyone contributing to this bot must be 18 years of age or older as well!!
 
 # Now that that's out of the way.  Hi!
 
