@@ -45,3 +45,9 @@ Deno.test(async function sendRequestTest() {
   await testResponse.body?.cancel(); // Cancel test request
   assertEquals(testResponse.status, 401);
 });
+
+Deno.test(async function calcMegabytesTest() {
+  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
+  const testValue = 1024; // bytes
+  await assertEquals(Math.ceil(testBot.calcMegabytes(testValue)), 1);
+});
