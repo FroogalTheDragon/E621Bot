@@ -47,3 +47,19 @@ export const fileTypes = {
   mp4: "mp4",
   webm: "webm",
 };
+
+export const blacklist: string[] = [
+  "gore",
+  "feces",
+  "young",
+  "loli",
+  "shota",
+  "killing",
+  "fart",
+  "farting_on_face",
+  "rape",
+  "inflation",
+  "diaper",
+  "snuff",
+  "morbidly_obese"
+];

@@ -1,4 +1,5 @@
 import * as urls from "../constants/urls.ts";
+import { API_PAGE_SIZE } from "../constants/numbers.ts";
 
 /**
  * Build an e621 URL based on parameters passed to this class
@@ -23,7 +24,7 @@ export class E621RequestBuilder {
    * @param order - Set the order to load the images in
    */
   constructor(
-    limit: number = 320, // How many images to load at a time
+    limit: number = API_PAGE_SIZE, // How many images to load at a time
     page: number = 1, // The page number to grab images from
     tags?: string[], // Tags Image, artist, species ALL THE TAGS!!
     date?: string, // Date to pull images from
@@ -46,6 +47,7 @@ export class E621RequestBuilder {
    * @returns string of tags separated by a '+'
    */
   tagString(): string {
+    // Build master array of tags + special tags
     const tags: Array<string> = Array.prototype.concat(
       this.tags,
       this.rating,
@@ -53,14 +55,9 @@ export class E621RequestBuilder {
       this.fileType,
       this.order,
     );
-
-    let tagString: string = "";
-    for (let i = 0; i < tags.length; i++) {
-      if (tags[i] == null) continue;
-      tagString += tags[i] + "+";
-    }
-    if (tagString.startsWith('+')) tagString = tagString.substring(1);
-    return tagString.slice(0, -1); // Remove the trailing + from the building process
+    
+    // Return list of tags separated by '+'
+    return tags.filter(tag => tag != null && tag !== "").join('+');
   }
 
   /**

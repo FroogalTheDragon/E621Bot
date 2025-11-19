@@ -51,30 +51,56 @@ if (import.meta.main) {
       : 0;
 
     // Calculate the page number to pull from the API
-    let apiPageToFetch = Math.floor(currentTelegramOffset / numbers.API_PAGE_SIZE) + 1;
+    let apiPageToFetch =
+      Math.floor(currentTelegramOffset / numbers.API_PAGE_SIZE) + 1;
 
     // Set our page number in the URL Builder
     request.page = apiPageToFetch;
 
     // The offset in the current batch of results
-    const offsetInCurrentApiPage = currentTelegramOffset % numbers.API_PAGE_SIZE;
+    const offsetInCurrentApiPage = currentTelegramOffset %
+      numbers.API_PAGE_SIZE;
 
     // Create a array to hold the Inline Query Results
     const inlineQueryResults: Array<InlineQueryResult> = [];
     // console.log(request.page);
     while (
-      inlineQueryResults.length < (numbers.IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
+      inlineQueryResults.length <
+        (numbers.IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
       moreApiPages
     ) {
       if (ctx.inlineQuery.query.length === 0) request.order = urls.date.today;
-      const yiffRequest = await yiffBot.sendRequest(request.buildUrl());
       console.log(request.buildUrl());
+      const yiffRequest = await yiffBot.sendRequest(request.buildUrl());
       const yiffJson = await yiffRequest.json();
       if (yiffJson.posts.length === 0) {
         moreApiPages = false;
         break;
       }
+
+      // Looping through our posts
+      posts_loop:
       for (const post in yiffJson.posts) {
+        // Handle blacklisted tags and skip post if a blacklisted tag is detected
+
+        // Loop through tag object and build an array to compare against set blacklisted tag
+        const blacklistTagArray = [];
+        for (const key in yiffJson.posts[post].tags) {
+          if (yiffJson.posts[post].tags[key].length === 0) continue;
+          for (let i = 0; i < yiffJson.posts[post].tags[key].length; i++) {
+            blacklistTagArray.push(yiffJson.posts[post].tags[key][i]);
+            if (
+              yiffBot.buildBlacklistRegex().test(
+                yiffJson.posts[post].tags[key][i],
+              )
+            ) {
+              console.log("Blacklisted tag detected!");
+              continue posts_loop; // Continue from posts_loop
+            }
+          }
+        }
+
+        // Check filetype and build InlineQueryResult of that type
         switch (yiffJson.posts[post].file.ext) {
           case (strings.fileTypes.jpg): {
             const result = InlineQueryResultBuilder.photo(
@@ -151,7 +177,8 @@ if (import.meta.main) {
     let nextTelegramOffset = "";
     const totalRequestsInThisQuery = currentResults.length;
 
-    const morePagesFound = totalRequestsInThisQuery === numbers.IMAGE_LOAD_COUNT &&
+    const morePagesFound =
+      totalRequestsInThisQuery === numbers.IMAGE_LOAD_COUNT &&
       (moreApiPages ||
         inlineQueryResults.length >
           (offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT));

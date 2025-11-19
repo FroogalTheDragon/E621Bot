@@ -1,6 +1,7 @@
 import { Bot } from "grammy";
 import { E621RequestBuilder } from "./E621RequestBuilder.ts";
-import { ONE_MEGABYTE } from "../constants/numbers.ts";
+import { ONE_MEGABYTE, REQUEST_TIME_LIMIT} from "../constants/numbers.ts";
+import { blacklist as bl } from "../constants/strings.ts";
 
 /**
  * E621Bot can get streams of images based on a users inline query
@@ -9,15 +10,18 @@ export class E621Bot extends Bot {
   telegramtelegramApiKey: string;
   e621ApiKey: string;
   hits: number;
+  blacklist: string[];
   constructor(
     telegramApiKey: string,
     e621ApiKey: string,
     hits: number = 0,
+    blacklist: string[] = bl,
   ) {
     super(telegramApiKey);
     this.telegramtelegramApiKey = telegramApiKey;
     this.e621ApiKey = e621ApiKey;
     this.hits = hits;
+    this.blacklist = blacklist;
   }
 
   /**
@@ -25,6 +29,11 @@ export class E621Bot extends Bot {
    * @returns Promise<Response>
    */
   async sendRequest(url: string): Promise<Response> {
+    const sleep = (ms: number) =>
+      new Promise((resolve) => {
+        console.log("Request Sent");
+        setTimeout(resolve, ms);
+      });
     const username: string = "Froogal";
     const response = await fetch(url, {
       headers: {
@@ -33,6 +42,7 @@ export class E621Bot extends Bot {
         "User-Agent": `NMDergBot/1.0 (by ${username} on e621)`,
       },
     });
+    await sleep(REQUEST_TIME_LIMIT);
     return response;
   }
 
@@ -50,11 +60,13 @@ export class E621Bot extends Bot {
 
     // Create an array to store the parsed tags
     const parsedTags = new Array<string>();
-
+    
     // Check for key words and build key word tags as needed
     for (const tag in queryTags) {
-      console.log(queryTags[tag]);
-      if (/(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])) {
+      if (this.buildBlacklistRegex().test(queryTags[tag])) continue;
+      if (
+        /(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])
+      ) {
         request_builder.date = `date:${queryTags[tag]}`;
         continue;
       }
@@ -86,5 +98,9 @@ export class E621Bot extends Bot {
    */
   calcMegabytes(bytes: number): number {
     return bytes / ONE_MEGABYTE; // Divide number of bytes by the number of bytes equal to one megabytes
+  }
+
+  buildBlacklistRegex(): RegExp {
+    return new RegExp("(" + this.blacklist.join("|") + ")");
   }
 }
