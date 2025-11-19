@@ -1,8 +1,9 @@
 import { Bot } from "grammy";
 import { E621RequestBuilder } from "./E621RequestBuilder.ts";
+import { ONE_MEGABYTE } from "../constants/numbers.ts";
 
 /**
- * 
+ * E621Bot can get streams of images based on a users inline query
  */
 export class E621Bot extends Bot {
   telegramtelegramApiKey: string;
@@ -20,7 +21,6 @@ export class E621Bot extends Bot {
   }
 
   /**
-   * 
    * @param url url to fetch images from
    * @returns Promise<Response>
    */
@@ -37,10 +37,9 @@ export class E621Bot extends Bot {
   }
 
   /**
-   * 
-   * @param query 
-   * @param request_builder 
-   * @returns 
+   * @param query
+   * @param request_builder
+   * @returns
    */
   async parseInlineQuery(
     query: string,
@@ -82,10 +81,10 @@ export class E621Bot extends Bot {
 
   /**
    * Calculate the number of megabytes were passed
-   * @param bytes 
+   * @param bytes
    * @returns The number of bytes passed to it in megabyte format
    */
   calcMegabytes(bytes: number): number {
-    return bytes / 1_048_576;
+    return bytes / ONE_MEGABYTE; // Divide number of bytes by the number of bytes equal to one megabytes
   }
 }
