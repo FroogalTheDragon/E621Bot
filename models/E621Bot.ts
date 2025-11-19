@@ -60,10 +60,10 @@ export class E621Bot extends Bot {
 
     // Create an array to store the parsed tags
     const parsedTags = new Array<string>();
-    
+
     // Check for key words and build key word tags as needed
     for (const tag in queryTags) {
-      if (this.buildBlacklistRegex().test(queryTags[tag])) continue;
+      if (this.blacklist.length !== 0 && this.buildBlacklistRegex()?.test(queryTags[tag])) continue;
       if (
         /(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])
       ) {
@@ -100,7 +100,8 @@ export class E621Bot extends Bot {
     return bytes / ONE_MEGABYTE; // Divide number of bytes by the number of bytes equal to one megabytes
   }
 
-  buildBlacklistRegex(): RegExp {
+  buildBlacklistRegex(): RegExp | null {
+    if (this.blacklist.length === 0) return null;
     return new RegExp("(" + this.blacklist.join("|") + ")");
   }
 }
