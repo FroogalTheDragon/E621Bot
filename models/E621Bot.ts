@@ -80,6 +80,11 @@ export class E621Bot extends Bot {
     return await request_builder;
   }
 
+  /**
+   * Calculate the number of megabytes were passed
+   * @param bytes 
+   * @returns The number of bytes passed to it in megabyte format
+   */
   calcMegabytes(bytes: number): number {
     return bytes / 1_048_576;
   }
