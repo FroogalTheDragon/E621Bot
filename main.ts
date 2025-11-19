@@ -90,7 +90,7 @@ if (import.meta.main) {
           for (let i = 0; i < yiffJson.posts[post].tags[key].length; i++) {
             blacklistTagArray.push(yiffJson.posts[post].tags[key][i]);
             if (
-              yiffBot.buildBlacklistRegex().test(
+              yiffBot.buildBlacklistRegex()?.test(
                 yiffJson.posts[post].tags[key][i],
               )
             ) {
@@ -194,7 +194,7 @@ if (import.meta.main) {
     await ctx.answerInlineQuery(currentResults, {
       next_offset: nextTelegramOffset,
       is_personal: true,
-      cache_time: 600,
+      cache_time: 0,
     });
   });
 
