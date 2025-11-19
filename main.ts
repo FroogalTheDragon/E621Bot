@@ -2,7 +2,7 @@ import { InlineQueryResult } from "grammy/types";
 import { E621Bot } from "./models/E621Bot.ts";
 import { InlineQueryResultBuilder } from "grammy";
 import { E621RequestBuilder } from "./models/E621RequestBuilder.ts";
-import { API_PAGE_SIZE, IMAGE_LOAD_COUNT } from "./constants/numbers.ts";
+import * as numbers from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
 import * as strings from "./constants/strings.ts";
 
@@ -51,19 +51,19 @@ if (import.meta.main) {
       : 0;
 
     // Calculate the page number to pull from the API
-    let apiPageToFetch = Math.floor(currentTelegramOffset / API_PAGE_SIZE) + 1;
+    let apiPageToFetch = Math.floor(currentTelegramOffset / numbers.API_PAGE_SIZE) + 1;
 
     // Set our page number in the URL Builder
     request.page = apiPageToFetch;
 
     // The offset in the current batch of results
-    const offsetInCurrentApiPage = currentTelegramOffset % API_PAGE_SIZE;
+    const offsetInCurrentApiPage = currentTelegramOffset % numbers.API_PAGE_SIZE;
 
     // Create a array to hold the Inline Query Results
     const inlineQueryResults: Array<InlineQueryResult> = [];
     // console.log(request.page);
     while (
-      inlineQueryResults.length < (IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
+      inlineQueryResults.length < (numbers.IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
       moreApiPages
     ) {
       if (ctx.inlineQuery.query.length === 0) request.order = urls.date.today;
@@ -102,12 +102,21 @@ if (import.meta.main) {
             break;
           }
           case (strings.fileTypes.mp4): {
-            const result = InlineQueryResultBuilder.videoMp4(
-              `${yiffJson.posts[post].id}`,
-              `${yiffJson.posts[post].tags.artist[0]}`,
-              `${yiffJson.posts[post].file.url}`,
-              `${yiffJson.posts[post].preview.url}`,
-            ).text(`${urls.baseUrl}/${yiffJson.posts[post].id}`);
+            const result =
+              (yiffBot.calcMegabytes(yiffJson.posts[post].file.size) >
+                  numbers.MAX_FILE_SIZE)
+                ? InlineQueryResultBuilder.videoMp4(
+                  `${yiffJson.posts[post].id}`,
+                  `${yiffJson.posts[post].tags.artist[0]}`,
+                  `${yiffJson.posts[post].file.url}`,
+                  `${yiffJson.posts[post].preview.url}`,
+                ).text(`${urls.baseUrl}/${yiffJson.posts[post].id}`)
+                : InlineQueryResultBuilder.videoMp4(
+                  `${yiffJson.posts[post].id}`,
+                  `${yiffJson.posts[post].tags.artist[0]}`,
+                  `${yiffJson.posts[post].file.url}`,
+                  `${yiffJson.posts[post].preview.url}`,
+                );
             inlineQueryResults.push(result);
             break;
           }
@@ -127,7 +136,7 @@ if (import.meta.main) {
         }
       }
 
-      if (yiffJson.posts.length < API_PAGE_SIZE) {
+      if (yiffJson.posts.length < numbers.API_PAGE_SIZE) {
         moreApiPages = false;
       } else {
         apiPageToFetch++;
@@ -136,16 +145,16 @@ if (import.meta.main) {
 
     const currentResults = inlineQueryResults.slice(
       offsetInCurrentApiPage,
-      offsetInCurrentApiPage + IMAGE_LOAD_COUNT,
+      offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT,
     );
 
     let nextTelegramOffset = "";
     const totalRequestsInThisQuery = currentResults.length;
 
-    const morePagesFound = totalRequestsInThisQuery === IMAGE_LOAD_COUNT &&
+    const morePagesFound = totalRequestsInThisQuery === numbers.IMAGE_LOAD_COUNT &&
       (moreApiPages ||
         inlineQueryResults.length >
-          (offsetInCurrentApiPage + IMAGE_LOAD_COUNT));
+          (offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT));
 
     if (morePagesFound) {
       nextTelegramOffset = String(
@@ -158,7 +167,7 @@ if (import.meta.main) {
     await ctx.answerInlineQuery(currentResults, {
       next_offset: nextTelegramOffset,
       is_personal: true,
-      cache_time: 0
+      cache_time: 600,
     });
   });
 
