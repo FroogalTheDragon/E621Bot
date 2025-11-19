@@ -79,4 +79,8 @@ export class E621Bot extends Bot {
     request_builder.tags = parsedTags;
     return await request_builder;
   }
+
+  calcMegabytes(bytes: number): number {
+    return bytes / 1_048_576;
+  }
 }
