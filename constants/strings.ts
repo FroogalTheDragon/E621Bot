@@ -30,7 +30,9 @@ The words dragon, gryphon, today, random, and safe will return images with <b><u
 You can find a list of valid tags <a href="https://e621.net/tags">here</a> you can mix and match the key words and the tags in any way you like!
 
 <b><u>LIMITATIONS!!</u></b>
-Due to limitations in Telegram posts with the swf and webp file types won't show up in the bot.
+Due to limitations in Telegram posts with the <b>.swf</b> and <b>.webp</b> file types won't show up in the bot.
+
+Due to limitations in Telegram bots can't send files more than 50Mb in size; so <b>.mp4</b> files with a file size of more than 50Mb will send the e621 link that points to that post, instead of the image.
 `;
 
 export const infoString = `
