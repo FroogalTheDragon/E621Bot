@@ -112,10 +112,8 @@ if (import.meta.main) {
             break;
           }
           case (strings.fileTypes.webm): {
-            const result = InlineQueryResultBuilder.videoMp4(
+            const result = InlineQueryResultBuilder.photo(
               `${yiffJson.posts[post].id}`,
-              `${yiffJson.posts[post].tags.artist[0]}`,
-              `${yiffJson.posts[post].file.url}`,
               `${yiffJson.posts[post].preview.url}`,
             ).text(`${urls.baseUrl}/${yiffJson.posts[post].id}`);
             inlineQueryResults.push(result);
@@ -160,7 +158,7 @@ if (import.meta.main) {
     await ctx.answerInlineQuery(currentResults, {
       next_offset: nextTelegramOffset,
       is_personal: true,
-      cache_time: 300
+      cache_time: 0
     });
   });
 
