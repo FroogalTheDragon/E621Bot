@@ -1,10 +1,13 @@
 import * as urls from "../constants/urls.ts";
 import { API_PAGE_SIZE } from "../constants/numbers.ts";
+import { E621UrlBuilder } from "./E621UrlBuilder.ts";
 
 /**
  * Build an e621 URL based on parameters passed to this class
  */
-export class E621RequestBuilder {
+export class E621UrlBuilderPosts implements E621UrlBuilder {
+  baseUrl: string;
+  endpoint: string
   limit?: number;
   date?: string;
   page?: number
@@ -14,7 +17,7 @@ export class E621RequestBuilder {
   order?: string;
 
   /**
-   * E621RequestBuilder constructor
+   * E621UrlBuilderPosts constructor
    * @param limit - Limit how many images load
    * @param page - Set the page number to grab images from
    * @param tags - Tags the user is searching for
@@ -24,6 +27,8 @@ export class E621RequestBuilder {
    * @param order - Set the order to load the images in
    */
   constructor(
+    baseUrl: string = urls.baseUrl,
+    endpoint: string = urls.endpoint.posts,
     limit: number = API_PAGE_SIZE, // How many images to load at a time
     page: number = 1, // The page number to grab images from
     tags?: string[], // Tags Image, artist, species ALL THE TAGS!!
@@ -32,6 +37,8 @@ export class E621RequestBuilder {
     rating?: string, // Rating Safe, Questionable, Explicit
     order?: string, // The order to display the images
   ) {
+    this.baseUrl = baseUrl;
+    this.endpoint = endpoint;
     this.date = date;
     this.page = page;
     this.tags = tags;
@@ -65,7 +72,7 @@ export class E621RequestBuilder {
    * @returns string URL built from the current state of the builder
    */
   buildUrl() {
-    return `${urls.baseUrlTags}?page=${this.page}&tags=${this.tagString()}&limit=${this.limit}`;
+    return `${this.baseUrl}${this.endpoint}?page=${this.page}&tags=${this.tagString()}&limit=${this.limit}`;
   }
 
   /**
