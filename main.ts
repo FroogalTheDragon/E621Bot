@@ -35,14 +35,24 @@ if (import.meta.main) {
 
   // INLINE QUERIES
   yiffBot.on("inline_query", async (ctx) => {
+    // Increase the hit counter
     yiffBot.hits++;
+
+    // Set blacklist back to zero after every call
+    yiffBot.blacklistedResults = 0;
     console.log(yiffBot.hits);
+    // yiffBot.blacklistedResults = 0;
     // Assume we will be getting pages of results
     let moreApiPages = true;
     const request = await yiffBot.parseInlineQuery(
       ctx.inlineQuery.query,
       new E621RequestBuilder(),
     );
+
+    if (ctx.inlineQuery.query.length === 0) request.order = urls.date.today;
+    const yiffRequest = await yiffBot.sendRequest(request.buildUrl());
+    const yiffJson = await yiffRequest.json();
+    console.log(request.buildUrl());
     // Handle offset
 
     // Get the current offset from Telegram
@@ -64,15 +74,14 @@ if (import.meta.main) {
     // Create a array to hold the Inline Query Results
     const inlineQueryResults: Array<InlineQueryResult> = [];
     // console.log(request.page);
+
     while (
       inlineQueryResults.length <
         (numbers.IMAGE_LOAD_COUNT + offsetInCurrentApiPage) &&
-      moreApiPages
+      moreApiPages && yiffBot.blacklistedResults <= numbers.BLACKLIST_MAX_HITS
     ) {
-      if (ctx.inlineQuery.query.length === 0) request.order = urls.date.today;
-      console.log(request.buildUrl());
-      const yiffRequest = await yiffBot.sendRequest(request.buildUrl());
-      const yiffJson = await yiffRequest.json();
+      
+      // Check if this request contains data, if it's empty then we have reached the end
       if (yiffJson.posts.length === 0) {
         moreApiPages = false;
         break;
@@ -84,22 +93,22 @@ if (import.meta.main) {
         // Handle blacklisted tags and skip post if a blacklisted tag is detected
 
         // Loop through tag object and build an array to compare against set blacklisted tag
-        const blacklistTagArray = [];
         for (const key in yiffJson.posts[post].tags) {
           if (yiffJson.posts[post].tags[key].length === 0) continue;
           for (let i = 0; i < yiffJson.posts[post].tags[key].length; i++) {
-            blacklistTagArray.push(yiffJson.posts[post].tags[key][i]);
+            // blacklistTagArray.push(yiffJson.posts[post].tags[key][i]);
             if (
               yiffBot.buildBlacklistRegex()?.test(
                 yiffJson.posts[post].tags[key][i],
               )
             ) {
-              console.log("Blacklisted tag detected!");
+              // console.log("Blacklisted tag detected!");
+              yiffBot.blacklistedResults++;
               continue posts_loop; // Continue from posts_loop
             }
           }
         }
-
+        
         // Check filetype and build InlineQueryResult of that type
         switch (yiffJson.posts[post].file.ext) {
           case (strings.fileTypes.jpg): {

@@ -22,3 +22,8 @@ export const ONE_MEGABYTE = 1_048_576
  * How long to wait between sending GET requests in milliseconds
  */
 export const REQUEST_TIME_LIMIT = 1000;
+
+/**
+ * How many blacklisted posts in a row that must be loaded until the query closes
+ */
+export const BLACKLIST_MAX_HITS = 500;

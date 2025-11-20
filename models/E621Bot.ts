@@ -10,17 +10,20 @@ export class E621Bot extends Bot {
   telegramtelegramApiKey: string;
   e621ApiKey: string;
   hits: number;
+  blacklistedResults: number;
   blacklist: string[];
   constructor(
     telegramApiKey: string,
     e621ApiKey: string,
     hits: number = 0,
+    blacklistedResults: number = 0,
     blacklist: string[] = bl,
   ) {
     super(telegramApiKey);
     this.telegramtelegramApiKey = telegramApiKey;
     this.e621ApiKey = e621ApiKey;
     this.hits = hits;
+    this.blacklistedResults = blacklistedResults;
     this.blacklist = blacklist;
   }
 
@@ -63,7 +66,7 @@ export class E621Bot extends Bot {
 
     // Check for key words and build key word tags as needed
     for (const tag in queryTags) {
-      if (this.blacklist.length !== 0 && this.buildBlacklistRegex()?.test(queryTags[tag])) continue;
+      // if (this.blacklist.length !== 0 && this.buildBlacklistRegex()?.test(queryTags[tag])) continue;
       if (
         /(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])
       ) {

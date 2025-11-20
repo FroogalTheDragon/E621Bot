@@ -61,4 +61,6 @@ export const blacklist: string[] = [
   "diaper",
   "snuff",
   "morbidly_obese",
+  "hyper_feces",
+  "eating_feces"
 ];
