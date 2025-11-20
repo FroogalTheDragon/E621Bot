@@ -15,7 +15,7 @@ You can use these key words in combination with tags to search anything you want
 
 * **today** - Will get you the images uploaded today
 * **yesterday** - Will get you images uploaded yesterday
-* **YYYY-MM-DD**</u></b>** - Will get you images on the date provided
+* **YYYY-MM-DD** - Will get you images on the date provided
 * **hot** - Will get you images from the hot page
 * **favcount** - Will get you images by favcount
 * **score** - Will get you images by score
