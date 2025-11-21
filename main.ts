@@ -35,7 +35,7 @@ if (import.meta.main) {
   });
 
   // INLINE QUERIES
-  yiffBot.inlineQuery(/pools search */, async (ctx) => {
+  yiffBot.inlineQuery(/search pools */, async (ctx) => {
     console.log("Searching Pools!");
 
     const queries = ctx.inlineQuery.query.replace("pools search ", "").split(
@@ -318,6 +318,10 @@ if (import.meta.main) {
       next_offset: nextTelegramOffset,
       is_personal: true,
       cache_time: 300,
+      button: {
+        text: "Login",
+        start_parameter: "login"
+      }
     });
   });
 
