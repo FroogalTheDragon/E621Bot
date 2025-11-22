@@ -15,14 +15,14 @@ export class E621Bot extends Bot {
   hits: number;
   blacklistedResults: number;
   blacklist: string[];
-  currentBatchOfResults?: Response // use this to store the current batch of results, and use a function to signal you need more results when the user has scrolled through all the ones inthe current batch.
+  currentBatchOfResults?: Response; // use this to store the current batch of results, and use a function to signal you need more results when the user has scrolled through all the ones inthe current batch.
   constructor(
     telegramApiKey: string,
     e621ApiKey: string,
     hits: number = 0,
     blacklistedResults: number = 0,
     blacklist: string[] = bl,
-    currentBatchOfResults?: Response
+    currentBatchOfResults?: Response,
   ) {
     super(telegramApiKey);
     this.telegramtelegramApiKey = telegramApiKey;
@@ -38,11 +38,6 @@ export class E621Bot extends Bot {
    * @returns Promise<Response>
    */
   async sendRequest(url: string): Promise<Response> {
-    const sleep = (ms: number) =>
-      new Promise((resolve) => {
-        console.log("Request Sent");
-        setTimeout(resolve, ms);
-      });
     const username: string = "Froogal";
     const response = await fetch(url, {
       headers: {
@@ -51,8 +46,6 @@ export class E621Bot extends Bot {
         "User-Agent": `NMDergBot/1.0 (by ${username} on e621)`,
       },
     });
-    await sleep(REQUEST_TIME_LIMIT);
-    this.currentBatchOfResults = response;
     return response;
   }
 
@@ -105,7 +98,7 @@ export class E621Bot extends Bot {
     urlBuilder: E621UrlBuilderPools,
   ): E621UrlBuilderPools {
     // put logic in main for pools here
-    const queries = query.replace("pools search ", "").split(" ");
+    const queries = query.replace("search pools ", "").split(" ");
 
     for (let i = 0; i < queries.length; i++) {
       const query = i + 1;
@@ -143,6 +136,7 @@ export class E621Bot extends Bot {
               urlBuilder.query = cidQuery;
               urlBuilder.search = searchType;
               console.log(`Creator Id: ${urlBuilder.search}`);
+              i++;
               break;
             }
             case "name": {
@@ -151,6 +145,7 @@ export class E621Bot extends Bot {
 
               urlBuilder.query = cnmQuery;
               urlBuilder.search = searchType;
+              i++;
               break;
             }
           }
@@ -173,10 +168,12 @@ export class E621Bot extends Bot {
           switch (queries[query + 1]) {
             case "series": {
               catQuery = "series";
+              i++;
               break;
             }
             case "collection": {
               catQuery = "collection";
+              i++;
               break;
             }
           }
@@ -221,7 +218,7 @@ export class E621Bot extends Bot {
         }
       }
     }
-    return urlBuilder
+    return urlBuilder;
   }
 
   /**

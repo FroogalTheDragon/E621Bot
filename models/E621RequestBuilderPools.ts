@@ -1,4 +1,4 @@
-import { API_PAGE_SIZE } from "../constants/numbers.ts";
+import { POOLS_PAGE_SIZE } from "../constants/numbers.ts";
 import { E621UrlBuilder } from "./E621UrlBuilder.ts";
 import * as urls from "../constants/urls.ts";
 
@@ -12,7 +12,7 @@ export class E621UrlBuilderPools implements E621UrlBuilder {
     constructor(
         baseUrl: string = urls.baseUrl,
         endpoint: string = urls.endpoint.json.pools,
-        limit: number = API_PAGE_SIZE,
+        limit: number = POOLS_PAGE_SIZE,
         search?: string,
         query?: string
     ) {

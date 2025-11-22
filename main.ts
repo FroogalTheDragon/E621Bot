@@ -8,6 +8,7 @@ import * as strings from "./constants/strings.ts";
 import { E621UrlBuilderPools } from "./models/E621RequestBuilderPools.ts";
 
 if (import.meta.main) {
+  let debounceTimeout;
   const yiffBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
@@ -36,20 +37,63 @@ if (import.meta.main) {
 
   // INLINE QUERIES
   yiffBot.inlineQuery(/search pools */, async (ctx) => {
-    console.log("Searching Pools!");
+    debounceTimeout = setTimeout(async () => {
+      const currentTelegramOffset = ctx.inlineQuery.offset
+        ? parseInt(ctx.inlineQuery.offset, 10)
+        : 0;
+      console.log(currentTelegramOffset);
 
-    const urlBuilder = yiffBot.parseInlineQueryPools(
-      ctx.inlineQuery.query,
-      new E621UrlBuilderPools(),
-    );
+      const urlBuilder = yiffBot.parseInlineQueryPools(
+        ctx.inlineQuery.query,
+        new E621UrlBuilderPools(),
+      );
+      const postUrlBuilder = new E621UrlBuilderPosts();
+      console.log(urlBuilder);
 
-    console.log(urlBuilder.buildUrl());
+      const poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+      const poolJson = await poolRequest.json();
 
-    // const poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
-    // const poolJson = await poolRequest.json();
+      const poolInlineQueryResults: Array<InlineQueryResult> = [];
+      for (const pool in poolJson) {
+        postUrlBuilder.tags = [`id:${poolJson[pool].post_ids[0]}`];
+        const thumbnailPostRequest = await yiffBot.sendRequest(
+          postUrlBuilder.buildUrl(),
+        );
+        const thumbnailPostJson = await thumbnailPostRequest.json();
+        const thumbnailUrl = thumbnailPostJson.posts[0].preview.url;
+        console.log(thumbnailUrl);
+        const result = InlineQueryResultBuilder.article(
+          String(poolJson[pool].id),
+          poolJson[pool].name,
+          { thumbnail_url: thumbnailPostJson.posts[0].preview.url },
+        ).text(`${urls.baseUrl}${urls.endpoint.pools}/${poolJson[pool].id}`);
+        // console.log(result);
+        poolInlineQueryResults.push(result);
+      }
 
-    // console.log(poolJson);
+      // Calculate next offset
+      const newOffset = currentTelegramOffset + numbers.POOLS_INLINE_LOAD_COUNT;
+
+      let poolSlice: Array<InlineQueryResult> = [];
+      if (currentTelegramOffset < poolInlineQueryResults.length) {
+        poolSlice = poolInlineQueryResults.slice(
+          currentTelegramOffset,
+          newOffset,
+        );
+      }
+
+      console.log();
+      await ctx.answerInlineQuery(poolSlice, {
+        cache_time: 300,
+        next_offset: String(newOffset),
+      });
+    }, 300); // Adjust the delay as needed
+    // clearTimeout(debounceTimeout);
   });
+
+  // yiffBot.on("chosen_inline_result", (ctx) => {
+  //   console.log(ctx.update.chosen_inline_result);
+  // })
 
   yiffBot.on("inline_query", async (ctx) => {
     // Stop processing if user types in "pools search"
@@ -70,7 +114,7 @@ if (import.meta.main) {
     let moreApiPages = true;
 
     // Parse the inline query and create a new URL builder object based on the query
-    const request = await yiffBot.parseInlineQuery(
+    const request = yiffBot.parseInlineQuery(
       ctx.inlineQuery.query,
       new E621UrlBuilderPosts(),
     );
@@ -211,6 +255,7 @@ if (import.meta.main) {
       }
     }
 
+    // This should slice from the stored state in yiffBot instead of these inline query results.
     const currentResults = inlineQueryResults.slice(
       offsetInCurrentApiPage,
       offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT,
@@ -223,12 +268,12 @@ if (import.meta.main) {
       (moreApiPages ||
         inlineQueryResults.length >
           (offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT));
-          
+
     let nextTelegramOffset = "";
     if (morePagesFound) {
       nextTelegramOffset = String(
         // Add the length of the slice we took from the results to the offset
-        currentTelegramOffset + currentResults.length,
+        currentTelegramOffset + numbers.IMAGE_LOAD_COUNT,
       );
     }
 
