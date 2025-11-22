@@ -6,9 +6,9 @@ import * as numbers from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
 import * as strings from "./constants/strings.ts";
 import { E621UrlBuilderPools } from "./models/E621RequestBuilderPools.ts";
+import { Api } from "grammy";
 
 if (import.meta.main) {
-  let debounceTimeout;
   const yiffBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
@@ -36,68 +36,74 @@ if (import.meta.main) {
   });
 
   // INLINE QUERIES
-  yiffBot.inlineQuery(/search pools */, async (ctx) => {
-    debounceTimeout = setTimeout(async () => {
-      const currentTelegramOffset = ctx.inlineQuery.offset
-        ? parseInt(ctx.inlineQuery.offset, 10)
-        : 0;
-      console.log(currentTelegramOffset);
 
-      const urlBuilder = yiffBot.parseInlineQueryPools(
-        ctx.inlineQuery.query,
-        new E621UrlBuilderPools(),
+  /**
+   * Search for pools
+   */
+  yiffBot.inlineQuery(/sp */, async (ctx) => {
+    const currentTelegramOffset = ctx.inlineQuery.offset
+      ? parseInt(ctx.inlineQuery.offset, 10)
+      : 0;
+    console.log(currentTelegramOffset);
+
+    const urlBuilder = yiffBot.parseInlineQueryPools(
+      ctx.inlineQuery.query,
+      new E621UrlBuilderPools(),
+    );
+    const postUrlBuilder = new E621UrlBuilderPosts();
+    console.log(urlBuilder);
+
+    const poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+    const poolJson = await poolRequest.json();
+
+    const poolInlineQueryResults: Array<InlineQueryResult> = [];
+    for (const pool in poolJson) {
+      postUrlBuilder.tags = [`id:${poolJson[pool].post_ids[0]}`];
+      const thumbnailPostRequest = await yiffBot.sendRequest(
+        postUrlBuilder.buildUrl(),
       );
-      const postUrlBuilder = new E621UrlBuilderPosts();
-      console.log(urlBuilder);
+      const thumbnailPostJson = await thumbnailPostRequest.json();
+      const thumbnailUrl = thumbnailPostJson.posts[0].preview.url;
+      console.log(thumbnailUrl);
+      const result = InlineQueryResultBuilder.article(
+        String(poolJson[pool].id),
+        poolJson[pool].name,
+        { thumbnail_url: thumbnailPostJson.posts[0].preview.url },
+      ).text(`${urls.baseUrl}${urls.endpoint.pools}/${poolJson[pool].id}`);
+      // console.log(result);
+      poolInlineQueryResults.push(result);
+    }
 
-      const poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
-      const poolJson = await poolRequest.json();
+    // Calculate next offset
+    const newOffset = currentTelegramOffset + numbers.POOLS_INLINE_LOAD_COUNT;
 
-      const poolInlineQueryResults: Array<InlineQueryResult> = [];
-      for (const pool in poolJson) {
-        postUrlBuilder.tags = [`id:${poolJson[pool].post_ids[0]}`];
-        const thumbnailPostRequest = await yiffBot.sendRequest(
-          postUrlBuilder.buildUrl(),
-        );
-        const thumbnailPostJson = await thumbnailPostRequest.json();
-        const thumbnailUrl = thumbnailPostJson.posts[0].preview.url;
-        console.log(thumbnailUrl);
-        const result = InlineQueryResultBuilder.article(
-          String(poolJson[pool].id),
-          poolJson[pool].name,
-          { thumbnail_url: thumbnailPostJson.posts[0].preview.url },
-        ).text(`${urls.baseUrl}${urls.endpoint.pools}/${poolJson[pool].id}`);
-        // console.log(result);
-        poolInlineQueryResults.push(result);
-      }
+    let poolSlice: Array<InlineQueryResult> = [];
+    if (currentTelegramOffset < poolInlineQueryResults.length) {
+      poolSlice = poolInlineQueryResults.slice(
+        currentTelegramOffset,
+        newOffset,
+      );
+    }
 
-      // Calculate next offset
-      const newOffset = currentTelegramOffset + numbers.POOLS_INLINE_LOAD_COUNT;
-
-      let poolSlice: Array<InlineQueryResult> = [];
-      if (currentTelegramOffset < poolInlineQueryResults.length) {
-        poolSlice = poolInlineQueryResults.slice(
-          currentTelegramOffset,
-          newOffset,
-        );
-      }
-
-      console.log();
-      await ctx.answerInlineQuery(poolSlice, {
-        cache_time: 300,
-        next_offset: String(newOffset),
-      });
-    }, 300); // Adjust the delay as needed
-    // clearTimeout(debounceTimeout);
+    console.log();
+    await ctx.answerInlineQuery(poolSlice, {
+      cache_time: 300,
+      next_offset: String(newOffset),
+    });
   });
 
-  // yiffBot.on("chosen_inline_result", (ctx) => {
-  //   console.log(ctx.update.chosen_inline_result);
-  // })
+  yiffBot.on("chosen_inline_result", async (ctx) => {
+    console.log(ctx.chosenInlineResult);
+    await yiffBot.api.sendMessage(ctx.chosenInlineResult.from.id, `I'm watching you ${ctx.chosenInlineResult.from.username} and your little dog too ${urls.baseUrl}${urls.endpoint.posts}/${ctx.chosenInlineResult.result_id}`);
+  })
 
+  /**
+   * Handle general searches
+   */
   yiffBot.on("inline_query", async (ctx) => {
     // Stop processing if user types in "pools search"
-    if (ctx.inlineQuery.query === "pools search") return;
+    // if (ctx.inlineQuery.query === "pools search") return;
+    if (/sp */.test(ctx.inlineQuery.query)) return;
     // Increase the hit counter
     yiffBot.hits++;
 

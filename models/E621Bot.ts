@@ -1,10 +1,9 @@
-import { Bot } from "grammy";
+import { Api, Bot } from "grammy";
 import { E621UrlBuilderPosts } from "./E621UrlBuilderPosts.ts";
-import { ONE_MEGABYTE, REQUEST_TIME_LIMIT } from "../constants/numbers.ts";
+import { ONE_MEGABYTE } from "../constants/numbers.ts";
 import { blacklist as bl } from "../constants/strings.ts";
 import { E621UrlBuilderPools } from "./E621RequestBuilderPools.ts";
 import { poolSearch } from "../constants/urls.ts";
-import { InlineQueryResult } from "grammy/types";
 
 /**
  * E621Bot can get streams of images based on a users inline query
