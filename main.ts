@@ -5,8 +5,7 @@ import { E621UrlBuilderPosts } from "./models/E621UrlBuilderPosts.ts";
 import * as numbers from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
 import * as strings from "./constants/strings.ts";
-import { E621UrlBuilderPools } from "./models/E621RequestBuilderPools.ts";
-import { Api } from "grammy";
+import { E621UrlBuilderPools } from "./models/E621UrlBuilderPools.ts";
 
 if (import.meta.main) {
   const yiffBot = new E621Bot(
@@ -46,16 +45,37 @@ if (import.meta.main) {
       : 0;
     console.log(currentTelegramOffset);
 
-    const urlBuilder = yiffBot.parseInlineQueryPools(
-      ctx.inlineQuery.query,
-      new E621UrlBuilderPools(),
-    );
-    const postUrlBuilder = new E621UrlBuilderPosts();
-    console.log(urlBuilder);
+    // Calculate the page number to pull from the API
+    const apiPageToFetch =
+      Math.floor(currentTelegramOffset / numbers.POOLS_PAGE_SIZE) + 1;
 
-    const poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+    console.log(`Page: ${apiPageToFetch}`);
+    let urlBuilder;
+    ctx.inlineQuery.query
+      ? urlBuilder = yiffBot.parseInlineQueryPools(
+        ctx.inlineQuery.query,
+        new E621UrlBuilderPools(),
+      )
+      : urlBuilder = new E621UrlBuilderPools();
+    urlBuilder.page = apiPageToFetch;
+
+    let poolRequest;
+    if (ctx.inlineQuery.query === "sp" || ctx.inlineQuery.query === "sp ") {
+      poolRequest = await yiffBot.sendRequest(urlBuilder.getPoolsGallery());
+    } else {
+      poolRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+    }
+
+    console.log(poolRequest.url);
     const poolJson = await poolRequest.json();
 
+    if (poolJson.length === 0) {
+      console.log("END OF CONTENT");
+      return;
+    }
+
+    // Create a posts URLBuilder object to re-use in this loop
+    const postUrlBuilder = new E621UrlBuilderPosts();
     const poolInlineQueryResults: Array<InlineQueryResult> = [];
     for (const pool in poolJson) {
       postUrlBuilder.tags = [`id:${poolJson[pool].post_ids[0]}`];
@@ -63,8 +83,7 @@ if (import.meta.main) {
         postUrlBuilder.buildUrl(),
       );
       const thumbnailPostJson = await thumbnailPostRequest.json();
-      const thumbnailUrl = thumbnailPostJson.posts[0].preview.url;
-      console.log(thumbnailUrl);
+      // const thumbnailUrl = thumbnailPostJson.posts[0].preview.url;
       const result = InlineQueryResultBuilder.article(
         String(poolJson[pool].id),
         poolJson[pool].name,
@@ -85,24 +104,32 @@ if (import.meta.main) {
       );
     }
 
-    console.log();
     await ctx.answerInlineQuery(poolSlice, {
-      cache_time: 300,
+      cache_time: numbers.POOLS_CACHE_TIME,
       next_offset: String(newOffset),
     });
   });
 
   yiffBot.on("chosen_inline_result", async (ctx) => {
     console.log(ctx.chosenInlineResult);
-    await yiffBot.api.sendMessage(ctx.chosenInlineResult.from.id, `I'm watching you ${ctx.chosenInlineResult.from.username} and your little dog too ${urls.baseUrl}${urls.endpoint.posts}/${ctx.chosenInlineResult.result_id}`);
-  })
+    if (/sp/.test(ctx.chosenInlineResult.query)) {
+      await yiffBot.api.sendMessage(
+        ctx.chosenInlineResult.from.id,
+        `Here's a copy for yourself ${ctx.chosenInlineResult.from.username} from ${urls.baseUrl}${urls.endpoint.pools}/${ctx.chosenInlineResult.result_id} gotten with ${ctx.chosenInlineResult.query}`,
+      );
+      return;
+    }
+    await yiffBot.api.sendMessage(
+      ctx.chosenInlineResult.from.id,
+      `Here's a copy for yourself ${ctx.chosenInlineResult.from.username} from ${urls.baseUrl}${urls.endpoint.posts}/${ctx.chosenInlineResult.result_id} gotten with ${ctx.chosenInlineResult.query}`,
+    );
+  });
 
   /**
    * Handle general searches
    */
   yiffBot.on("inline_query", async (ctx) => {
-    // Stop processing if user types in "pools search"
-    // if (ctx.inlineQuery.query === "pools search") return;
+    // Stop processing if user types in "sp *"
     if (/sp */.test(ctx.inlineQuery.query)) return;
     // Increase the hit counter
     yiffBot.hits++;
@@ -262,10 +289,16 @@ if (import.meta.main) {
     }
 
     // This should slice from the stored state in yiffBot instead of these inline query results.
-    const currentResults = inlineQueryResults.slice(
-      offsetInCurrentApiPage,
-      offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT,
-    );
+    // console.log(inlineQueryResults);
+    let currentResults;
+    if (inlineQueryResults.length > 1) {
+      currentResults = inlineQueryResults.slice(
+        offsetInCurrentApiPage,
+        offsetInCurrentApiPage + numbers.IMAGE_LOAD_COUNT,
+      );
+    } else {
+      currentResults = inlineQueryResults;
+    }
 
     const totalRequestsInThisQuery = currentResults.length;
 
@@ -287,12 +320,12 @@ if (import.meta.main) {
     await ctx.answerInlineQuery(currentResults, {
       next_offset: nextTelegramOffset,
       is_personal: true,
-      cache_time: 300,
+      cache_time: numbers.POSTS_CACHE_TIME,
     });
   });
 
   yiffBot.catch(async (err) => {
-    await console.log(`E621Bot Error: ${err.message} Fuck You!!`);
+    await console.log(`E621Bot Error: ${err.message}:${err.ctx.chosenInlineResult} Fuck You!!`);
   });
 
   yiffBot.start();

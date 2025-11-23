@@ -64,7 +64,7 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
     );
     
     // Return list of tags separated by '+'
-    return tags.filter(tag => tag != null && tag !== "").join('+');
+    return encodeURIComponent(tags.filter(tag => tag != null && tag !== "").join(' '));
   }
 
   /**

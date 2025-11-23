@@ -1,8 +1,8 @@
-import { Api, Bot } from "grammy";
+import { Bot } from "grammy";
 import { E621UrlBuilderPosts } from "./E621UrlBuilderPosts.ts";
 import { ONE_MEGABYTE } from "../constants/numbers.ts";
 import { blacklist as bl } from "../constants/strings.ts";
-import { E621UrlBuilderPools } from "./E621RequestBuilderPools.ts";
+import { E621UrlBuilderPools } from "./E621UrlBuilderPools.ts";
 import { poolSearch } from "../constants/urls.ts";
 
 /**
@@ -97,7 +97,7 @@ export class E621Bot extends Bot {
     urlBuilder: E621UrlBuilderPools,
   ): E621UrlBuilderPools {
     // put logic in main for pools here
-    const queries = query.replace("search pools ", "").split(" ");
+    const queries = query.replace("sp ", "").split(" ");
 
     for (let i = 0; i < queries.length; i++) {
       const query = i + 1;
