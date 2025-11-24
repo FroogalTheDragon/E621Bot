@@ -10,7 +10,7 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
   endpoint: string
   limit?: number;
   date?: string;
-  page?: number
+  page: number
   tags?: string[];
   fileType?: string;
   rating?: string;
@@ -64,7 +64,7 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
     );
     
     // Return list of tags separated by '+'
-    return encodeURIComponent(tags.filter(tag => tag != null && tag !== "").join(' '));
+    return `?tags=${tags.filter(tag => tag != null && tag !== "").join('+')}`;
   }
 
   /**
@@ -72,7 +72,7 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
    * @returns string URL built from the current state of the builder
    */
   buildUrl() {
-    return `${this.baseUrl}${this.endpoint}?page=${this.page}&tags=${this.tagString()}&limit=${this.limit}`;
+    return `${this.baseUrl}${this.endpoint}${this.tagString()}&page=${this.page}&limit=${this.limit}`;
   }
 
   /**

@@ -1,9 +1,14 @@
-import { Bot } from "grammy";
+import { Bot, InlineQueryResultBuilder } from "grammy";
 import { E621UrlBuilderPosts } from "./E621UrlBuilderPosts.ts";
 import { ONE_MEGABYTE } from "../constants/numbers.ts";
 import { blacklist as bl } from "../constants/strings.ts";
 import { E621UrlBuilderPools } from "./E621UrlBuilderPools.ts";
 import { poolSearch } from "../constants/urls.ts";
+import * as strings from "../constants/strings.ts";
+import * as urls from "../constants/urls.ts";
+import * as numbers from "../constants/numbers.ts";
+import { InlineQueryResult } from "grammy/types";
+import { Post } from "./Post.ts";
 
 /**
  * E621Bot can get streams of images based on a users inline query
@@ -68,22 +73,22 @@ export class E621Bot extends Bot {
       if (
         /(today|yesterday|[0-9]{4}-[0-9]{2}-[0-9]{2})/.test(queryTags[tag])
       ) {
-        urlBuilder.date = `date:${queryTags[tag]}`;
+        urlBuilder.date = encodeURIComponent(`date:${queryTags[tag]}`);
         continue;
       }
 
       if (/(safe|questionable|explicit)/.test(queryTags[tag])) {
-        urlBuilder.rating = `rating:${queryTags[tag]}`;
+        urlBuilder.rating = encodeURIComponent(`rating:${queryTags[tag]}`);
         continue;
       }
 
       if (/(score|favcount|random|hot)/.test(queryTags[tag])) {
-        urlBuilder.order = `order:${queryTags[tag]}`;
+        urlBuilder.order = encodeURIComponent(`order:${queryTags[tag]}`);
         continue;
       }
 
       if (/(jpg|png|gif|mp4|webm)/.test(queryTags[tag])) {
-        urlBuilder.fileType = `type:${queryTags[tag]}`;
+        urlBuilder.fileType = encodeURIComponent(`type:${queryTags[tag]}`);
         continue;
       }
       parsedTags.push(queryTags[tag]);
@@ -97,7 +102,7 @@ export class E621Bot extends Bot {
     urlBuilder: E621UrlBuilderPools,
   ): E621UrlBuilderPools {
     // put logic in main for pools here
-    const queries = query.replace("sp ", "").split(" ");
+    const queries = query.toLocaleLowerCase().replace("sp ", "").split(" ");
 
     for (let i = 0; i < queries.length; i++) {
       const query = i + 1;
@@ -218,6 +223,96 @@ export class E621Bot extends Bot {
       }
     }
     return urlBuilder;
+  }
+
+  processPosts(posts: Post[]): InlineQueryResult[] {
+    const inlineQueryResults: InlineQueryResult[] = [];
+    // posts_loop:
+    for (const post in posts) {
+      // for (const key in posts[post].tags) {
+      //   if (posts[post].tags[key].length === 0) continue;
+      //   for (let i = 0; i < posts[post].tags[key].length; i++) {
+      //     // blacklistTagArray.push(yiffJson.posts[post].tags[key][i]);
+      //     if (
+      //       this.buildBlacklistRegex()?.test(
+      //         posts[post].tags[key][i],
+      //       )
+      //     ) {
+      //       // console.log("Blacklisted tag detected!");
+      //       this.blacklistedResults++;
+      //       continue posts_loop; // Continue from posts_loop
+      //     }
+      //   }
+      // }
+      // Check filetype and build InlineQueryResult of that type
+      switch (posts[post].fileType) {
+        case (strings.fileTypes.jpg): {
+          const result = InlineQueryResultBuilder.photo(
+            String(posts[post].id),
+            posts[post].url,
+          );
+          inlineQueryResults.push(result);
+          break;
+        }
+        case (strings.fileTypes.png): {
+          const result = InlineQueryResultBuilder.photo(
+            String(posts[post].id),
+            posts[post].url,
+          );
+          inlineQueryResults.push(result);
+          break;
+        }
+        case (strings.fileTypes.gif): {
+          const result = InlineQueryResultBuilder.gif(
+            `${posts[post].id}`,
+            posts[post].url,
+            posts[post].previewUrl,
+          );
+          inlineQueryResults.push(result);
+          break;
+        }
+        case (strings.fileTypes.mp4): {
+          console.log(
+            `Mp4 File Size: ${this.calcMegabytes(posts[post].fileSize)}`,
+          );
+          const result = (this.calcMegabytes(posts[post].fileSize) >
+              numbers.MAX_FILE_SIZE)
+            ? InlineQueryResultBuilder.videoMp4(
+              `${posts[post].id}`,
+              `${posts[post].title}`,
+              `${posts[post].url}`,
+              `${posts[post].previewUrl}`,
+            ).text(
+              `${urls.baseUrl}${urls.endpoint.posts}/${posts[post].id}`,
+            )
+            : InlineQueryResultBuilder.videoMp4(
+              `${posts[post].id}`,
+              `${posts[post].title}`,
+              `${posts[post].url}`,
+              `${posts[post].previewUrl}`,
+            );
+          inlineQueryResults.push(result);
+          break;
+        }
+        case (strings.fileTypes.webm): {
+          const result = InlineQueryResultBuilder.photo(
+            `${posts[post].id}`,
+            `${posts[post].previewUrl}`,
+          ).text(
+            `${urls.baseUrl}${urls.endpoint.posts}/${posts[post].id}`,
+          );
+          inlineQueryResults.push(result);
+          break;
+        }
+        default: {
+          console.log(
+            `Unknown File Extension: ${posts[post].fileType}`,
+          );
+          break;
+        }
+      }
+    }
+    return inlineQueryResults;
   }
 
   /**

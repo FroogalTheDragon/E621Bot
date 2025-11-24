@@ -11,12 +11,12 @@ export const MAX_FILE_SIZE: number = 50;
 /**
  * Maximum number of posts the bot can pull per request
  */
-export const API_PAGE_SIZE = 100;
+export const API_PAGE_SIZE = 320;
 
 /**
  * Amount of time in seconds the bot caches posts
  */
-export const POSTS_CACHE_TIME = 300;
+export const POSTS_CACHE_TIME = 0;
 
 /**
  * Maximum pools a the bot will pull per request
