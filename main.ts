@@ -28,7 +28,9 @@ if (import.meta.main) {
   });
 
   yiffBot.command("hits", async (ctx) => {
-    await ctx.reply(`I have processed ${yiffBot.hits}, and I was last used at ${yiffBot.last_hit_time}`);
+    await ctx.reply(
+      `I have processed ${yiffBot.hits}, and I was last used at ${yiffBot.last_hit_time}`,
+    );
   });
 
   yiffBot.command("help", async (ctx) => {
@@ -113,8 +115,16 @@ if (import.meta.main) {
 
   yiffBot.on("chosen_inline_result", () => {
     const date = new Date(); // Create a new date object to get time and date from
+    const time = date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
     yiffBot.hits++; // Increase hit count by one
-    yiffBot.last_hit_time = `${date.toDateString()} - ${date.getHours().toString()}:${date.getMinutes().toString()}:${date.getSeconds().toString()}`; // Set last_hit_time to right now
+    yiffBot.last_hit_time =
+      `${date.toDateString()} - ${time}`; // Set last_hit_time to right now
   });
 
   /**
