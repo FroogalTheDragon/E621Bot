@@ -28,7 +28,7 @@ if (import.meta.main) {
 
   yiffBot.command("hits", async (ctx) => {
     await ctx.reply(
-      `I have processed ${yiffBot.hits}, and I was last used at ${yiffBot.last_hit_time}`,
+      `I have processed ${yiffBot.hits} requests, and I was last used at ${yiffBot.last_hit_time}`,
     );
   });
 
@@ -41,7 +41,7 @@ if (import.meta.main) {
   /**
    * Search for pools
    */
-  yiffBot.inlineQuery(/sp */, async (ctx) => {
+  yiffBot.inlineQuery(/searchpools */, async (ctx) => {
     const urlBuilder = yiffBot.parseInlineQueryPools(
       ctx.inlineQuery.query,
       new E621UrlBuilderPools(),
@@ -65,10 +65,19 @@ if (import.meta.main) {
 
     urlBuilder.page = page;
 
-    console.log(`Current URL: ${urlBuilder.buildUrl()}`);
-
     // Grab our data
-    const poolsRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+    let poolsRequest;
+    if (
+      ctx.inlineQuery.query.toLocaleLowerCase().replace("searchpools", "") ===
+        ""
+    ) {
+      console.log(`Current URL: ${urlBuilder.poolsGalleryUrl()}`);
+      poolsRequest = await yiffBot.sendRequest(urlBuilder.poolsGalleryUrl());
+    } else {
+      console.log(`Current URL: ${urlBuilder.buildUrl()}`);
+      poolsRequest = await yiffBot.sendRequest(urlBuilder.buildUrl());
+    }
+
     const poolJson = await poolsRequest.json();
 
     // If posts length is 0 we have reached the end of the data
@@ -90,7 +99,8 @@ if (import.meta.main) {
             thumbnailRequestUrl,
           );
           const thumbnailUrlJson = await thumbnailUrlRequest.json();
-          const thumbnailUrl: string = thumbnailUrlJson.posts[0].preview.url || ""; // Set to empty if undefined
+          const thumbnailUrl: string = thumbnailUrlJson.posts[0].preview.url ||
+            ""; // Set to empty if undefined
           return <Pool> {
             id: pool.id,
             name: pool.name,
@@ -180,7 +190,7 @@ if (import.meta.main) {
     }
 
     const posts: Post[] = postsJson.map(
-      ( post: Post) => {
+      (post: Post) => {
         return <Post> {
           title: post.tags.artist[0],
           id: post.id,
@@ -188,7 +198,7 @@ if (import.meta.main) {
           previewUrl: post.preview.url,
           fileType: post.file.ext,
           fileSize: post.file.size,
-          tags: post.tags
+          tags: post.tags,
         };
       },
     );
