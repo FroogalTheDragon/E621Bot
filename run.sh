@@ -21,7 +21,7 @@ function get_keys() {
 
 # Setup the environment variables based on the keys found in the passed file
 function setup_env() {
-    if [ ${#keys[0]} -gt ${#keys[1]} ]; then
+    if [ ${#keys[0]} -gt ${#keys[1]} ]; then # The telegram key is shorter than the e621 key this is so it doesnt matter the order you put the keys in the file
         export TELEGRAM_BOT_KEY=${keys[0]};
         export E621_API_KEY=${keys[1]};
     else
