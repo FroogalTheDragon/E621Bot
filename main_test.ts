@@ -2,8 +2,10 @@ import { assertEquals } from "@std/assert";
 import { E621Bot } from "./models/E621Bot.ts";
 import { E621UrlBuilderPosts } from "./models/E621UrlBuilderPosts.ts";
 import { API_PAGE_SIZE } from "./constants/numbers.ts";
-import * as urls from "./constants/urls.ts";
 import { E621UrlBuilderPools } from "./models/E621UrlBuilderPools.ts";
+import * as urls from "./constants/urls.ts";
+import * as numbers from "./constants/numbers.ts";
+
 
 Deno.test(function buildUrlTest() {
   const testUrl =
@@ -33,7 +35,7 @@ Deno.test(function getFileExtensionsTest() {
  */
 // Deno.test(function processPostsTest() {
 //   const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
-  
+
 // });
 
 /**
@@ -42,12 +44,15 @@ Deno.test(function getFileExtensionsTest() {
 Deno.test(function parseInlineQueryTest() {
   const testUrlBuilder = new E621UrlBuilderPosts();
   testUrlBuilder.tags = ["dragon", "unicorn"];
-  testUrlBuilder.rating = encodeURIComponent(urls.rating.safe);
-  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
+  testUrlBuilder.rating = urls.rating.safe;
+  const testBot = new E621Bot(
+    Deno.env.get("TELEGRAM_BOT_KEY") || "",
+    Deno.env.get("E621_API_KEY") || "",
+  );
   assertEquals(
     testBot.parseInlineQuery(
       "dragon unicorn safe",
-      new E621UrlBuilderPosts()
+      new E621UrlBuilderPosts(),
     ),
     testUrlBuilder,
   );
@@ -58,7 +63,10 @@ Deno.test(function parseInlineQueryTest() {
  */
 Deno.test(function parseInlineQueryPoolsTest() {
   // Create a test bot instance
-  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
+  const testBot = new E621Bot(
+    Deno.env.get("TELEGRAM_BOT_KEY") || "",
+    Deno.env.get("E621_API_KEY") || "",
+  );
 
   // Define test queries for each case
   const testQueryName = "sp name The Little Dragon Who Could";
@@ -75,22 +83,23 @@ Deno.test(function parseInlineQueryPoolsTest() {
   const basePoolsUrl = `${urls.baseUrl}${urls.endpoint.json.pools}`;
 
   const testUrlName =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.nameMatches}]=the+little+dragon+who+could`;
-  const testUrlId = `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.id}]=12345`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.nameMatches}]=the+little+dragon+who+could`;
+  const testUrlId =
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.id}]=12345`;
   const testUrlDescription =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.descriptionMatches}]=dragons+with+goggles`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.descriptionMatches}]=dragons+with+goggles`;
   const testUrlCreatorId =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.creatorId}]=12345`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.creatorId}]=12345`;
   const testUrlCreatorName =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.creatorName}]=furryartistusername`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.creatorName}]=furryartistusername`;
   const testUrlActive =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.isActive}]=true`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.isActive}]=true`;
   const testUrlInactive =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.isActive}]=false`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.isActive}]=false`;
   const testUrlCategorySeries =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.category}]=series`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.category}]=series`;
   const testUrlCategoryCollection =
-    `${basePoolsUrl}?page=1&limit=5&search[${urls.poolSearch.category}]=collection`;
+    `${basePoolsUrl}?page=1&limit=${numbers.POOLS_PAGE_SIZE}&search[${urls.poolSearch.category}]=collection`;
 
   // Create instances of the URL builder built with these queries
   const testUrlBuilderName = testBot.parseInlineQueryPools(
@@ -139,33 +148,49 @@ Deno.test(function parseInlineQueryPoolsTest() {
   assertEquals(testUrlBuilderActive.buildUrl(), testUrlActive);
   assertEquals(testUrlBuilderInactive.buildUrl(), testUrlInactive);
   assertEquals(testUrlBuilderCategorySeries.buildUrl(), testUrlCategorySeries);
-  assertEquals(testUrlBuilderCategoryCollection.buildUrl(), testUrlCategoryCollection);
+  assertEquals(
+    testUrlBuilderCategoryCollection.buildUrl(),
+    testUrlCategoryCollection,
+  );
 });
 // TODO: Write test for processPosts()
 // TODO: Write test for getPoolsGallery()
 
 Deno.test(async function sendRequestTest() {
   const testUrl = "https://e621.net/posts?tags=dragon+rating:safe";
-  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
+  const testBot = new E621Bot(
+    Deno.env.get("TELEGRAM_BOT_KEY") || "",
+    Deno.env.get("E621_API_KEY") || "",
+  );
   const testResponse = await testBot.sendRequest(testUrl);
   await testResponse.body?.cancel(); // Cancel test request
-  assertEquals(testResponse.status, 401);
+  assertEquals(testResponse.status, 200);
 });
 
 Deno.test(function calcMegabytesTest() {
-  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN");
+  const testBot = new E621Bot(
+    Deno.env.get("TELEGRAM_BOT_KEY") || "",
+    Deno.env.get("E621_API_KEY") || "",
+  );
   const testValue = 1024; // bytes
   assertEquals(Math.ceil(testBot.calcMegabytes(testValue)), 1);
 });
 
 Deno.test(function buildBlacklistRegexTest() {
-  const testBot = new E621Bot("TEST_TOKEN", "TEST_TOKEN", 0, "", 0, [
-    "feces",
-    "murder",
-    "waterworks",
-  ]);
+  const testBot = new E621Bot(
+    Deno.env.get("TELEGRAM_BOT_KEY") || "",
+    Deno.env.get("E621_API_KEY") || "",
+    0,
+    "",
+    0,
+    [
+      "feces",
+      "murder",
+      "waterworks",
+    ],
+  );
   assertEquals(
     testBot.buildBlacklistRegex(),
-    /(feces|murder|waterworks)/
+    /(feces|murder|waterworks)/,
   );
 });
