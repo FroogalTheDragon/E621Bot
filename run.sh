@@ -51,7 +51,8 @@ fi
 
 # Process args
 case $run in
-    "dev")deno run dev;;
+    "dev") deno run dev;;
     "test") deno run test;;
+    "exe") ./E621Bot;;
     *) echo "Invalid option detected: $run, Expecting dev or test";;
 esac
