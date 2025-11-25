@@ -153,7 +153,7 @@ if (import.meta.main) {
     );
 
     // Stop processing if user types in "sp *"
-    if (/sp */.test(ctx.inlineQuery.query)) return;
+    if (/searchpools */.test(ctx.inlineQuery.query)) return;
     if (ctx.inlineQuery.query == "") {
       urlBuilder.date = urls.date.today;
     }
