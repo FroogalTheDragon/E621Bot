@@ -6,7 +6,6 @@ import { E621UrlBuilderPools } from "./models/E621UrlBuilderPools.ts";
 import * as urls from "./constants/urls.ts";
 import * as numbers from "./constants/numbers.ts";
 
-
 Deno.test(function buildUrlTest() {
   const testUrl =
     `https://e621.net/posts.json?tags=dragon+rating:safe&page=1&limit=${API_PAGE_SIZE}`;
@@ -48,6 +47,7 @@ Deno.test(function parseInlineQueryTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
+    new Array<string>(),
   );
   assertEquals(
     testBot.parseInlineQuery(
@@ -66,6 +66,7 @@ Deno.test(function parseInlineQueryPoolsTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
+    new Array<string>(),
   );
 
   // Define test queries for each case
@@ -161,6 +162,7 @@ Deno.test(async function sendRequestTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
+    new Array<string>(),
   );
   const testResponse = await testBot.sendRequest(testUrl);
   await testResponse.body?.cancel(); // Cancel test request
@@ -171,23 +173,22 @@ Deno.test(function calcMegabytesTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
+    new Array<string>(),
   );
   const testValue = 1024; // bytes
   assertEquals(Math.ceil(testBot.calcMegabytes(testValue)), 1);
 });
 
 Deno.test(function buildBlacklistRegexTest() {
+  const blacklist: string[] = [
+    "feces",
+    "murder",
+    "waterworks",
+  ];
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
-    0,
-    "",
-    0,
-    [
-      "feces",
-      "murder",
-      "waterworks",
-    ],
+    blacklist,
   );
   assertEquals(
     testBot.buildBlacklistRegex(),
