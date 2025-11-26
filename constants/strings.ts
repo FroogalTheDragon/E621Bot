@@ -48,23 +48,6 @@ export const fileTypes = {
   webm: "webm",
 };
 
-export const blacklist: string[] = [
-  "gore",
-  "feces",
-  "young",
-  "loli",
-  "shota",
-  "killing",
-  "fart",
-  "farting_on_face",
-  "rape",
-  "diaper",
-  "snuff",
-  "morbidly_obese",
-  "hyper_feces",
-  "eating_feces"
-];
-
 export const keywordsRegex = "(id|creator|active|inactive|category|order)";
 
 export const BLACKLIST_PATH = "./blacklist.txt";
