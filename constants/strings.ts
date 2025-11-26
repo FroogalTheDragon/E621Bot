@@ -66,3 +66,5 @@ export const blacklist: string[] = [
 ];
 
 export const keywordsRegex = "(id|creator|active|inactive|category|order)";
+
+export const BLACKLIST_PATH = "./blacklist.txt";

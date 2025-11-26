@@ -2,7 +2,6 @@ import { Bot, InlineQueryResultBuilder } from "grammy";
 import { InlineQueryResult } from "grammy/types";
 import { E621UrlBuilderPosts } from "./E621UrlBuilderPosts.ts";
 import { ONE_MEGABYTE } from "../constants/numbers.ts";
-import { blacklist as bl } from "../constants/strings.ts";
 import { E621UrlBuilderPools } from "./E621UrlBuilderPools.ts";
 import { poolSearch } from "../constants/urls.ts";
 import { Post } from "./interfaces.ts";
@@ -17,28 +16,25 @@ import * as numbers from "../constants/numbers.ts";
 export class E621Bot extends Bot {
   telegramtelegramApiKey: string;
   e621ApiKey: string;
+  blacklist: string[];
+  blacklistPath: string;
   hits: number;
   last_hit_time?: string;
-  blacklistedResults: number;
-  blacklist: string[];
-  currentBatchOfResults?: Response; // use this to store the current batch of results, and use a function to signal you need more results when the user has scrolled through all the ones inthe current batch.
   constructor(
     telegramApiKey: string,
     e621ApiKey: string,
+    blacklist: string[],
+    blacklistPath: string = "./blacklist.txt",
     hits: number = 0,
     last_hit_time?: string,
-    blacklistedResults: number = 0,
-    blacklist: string[] = bl,
-    currentBatchOfResults?: Response,
   ) {
     super(telegramApiKey);
     this.telegramtelegramApiKey = telegramApiKey;
     this.e621ApiKey = e621ApiKey;
+    this.blacklist = blacklist;
+    this.blacklistPath = blacklistPath;
     this.hits = hits;
     this.last_hit_time = last_hit_time;
-    this.blacklistedResults = blacklistedResults;
-    this.blacklist = blacklist;
-    this.currentBatchOfResults = currentBatchOfResults;
   }
 
   /**
@@ -204,25 +200,16 @@ export class E621Bot extends Bot {
           // Subcommand
           switch (queries[query]) {
             case "name": {
-              // const orderNameQuery = queries[Number(query) + 1];
-              // const searchType = urls.poolSearch.order.name;
-
               urlBuilder.query = queries[query];
               urlBuilder.search = queries[i];
               break;
             }
             case "created": {
-              // const createdAtQuery = queries[Number(query) +1];
-              // const searchType = urls.poolSearch.order.createdAt;
-
               urlBuilder.query = `${queries[query]}_at`;
               urlBuilder.search = queries[i];
               break;
             }
             case "updated": {
-              // const updatedAtQuery = queries[Number(query) + 1];
-              // const searchType = urls.poolSearch.order.updatedAt;
-
               urlBuilder.query = `${queries[query]}_at`;
               urlBuilder.search = queries[i];
               break;
@@ -250,7 +237,7 @@ export class E621Bot extends Bot {
         tagMatrix.push(posts[post].tags[key]);
       });
       const tags = tagMatrix.flat();
-      
+
       // Check for blacklisted tags
       for (const tag in tags) {
         if (this.buildBlacklistRegex()?.test(tags[tag])) {
