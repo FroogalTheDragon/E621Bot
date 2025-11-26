@@ -1,13 +1,13 @@
-# Let's get the important stuff out of the way!
+# Let's get the important stuff out of the way
 
-# This bot pulls images from a website that hosts images of all ratings, from images rated SFW to sexually explicit images to images depicting violence.  As such this bot shouldn't be used by anyone under the age of 18.  Also anyone contributing to this bot must be 18 years of age or older as well!!
+## This bot pulls images from a website that hosts images of all ratings, from images rated SFW to sexually explicit images to images depicting violence.  As such this bot shouldn't be used by anyone under the age of 18.  Also anyone contributing to this bot must be 18 years of age or older as well
 
-# Now that that's out of the way.  Hi!
+## Now that that's out of the way.  Hi
 
-Hello!  Welcome to the NMDergBot!  This is a bot that allows you to browse and share images from the furry image hosting service [e621]("https://www.e621.net"), help you find your favorite furry art to share with your furry friends!
-NMDergBot is an inline telegram bot meaning that you communicate with it via `@NMDergBot [query]`.  You can use a simple query format to search with this bot as follows:
+Hello!  Welcome to the E621Bot!  This is a bot that allows you to browse and share images from the furry image hosting service [e621]("https://www.e621.net"), help you find your favorite furry art to share with your furry friends!
+NMDergBot is an inline telegram bot meaning that you communicate with it via `@NMDergBot [query]`.  You can use a simple query format.  You can use my version of the bot, which isn't always running because it's still in development or you can use this code to run you own bot, both ways are fine.
   
-# Searching with Keywords:
+## Searching with Keywords
 
 This bot has a set of keywords that can be used to augment the results of your query.  They can be used anywhere in the query.
 
@@ -24,7 +24,7 @@ You can use these key words in combination with tags to search anything you want
 * **questionable** - Will get you images rated **questionable**
 * **explicit** - Will get you images rated **explicit**
 
-# Searching with Tags and Keywords:
+## Searching with Tags and Keywords
 
 Just type your query like so `@NMDergBot dragon gryphon today random safe` they are not case sensitive but must be **space seperated**!
 
@@ -32,17 +32,22 @@ The words **dragon**, **gryphon**, **today**, **random**, and **safe** will retu
 
 You can find a list of valid tags [e621]("https://www.e621.net") you can mix and match the key words and the tags in any way you like!
 
-# How do I setup the bot?
+## How do I setup the bot?
+
 If you want to run you own version of the bot you can download the source code.
 
-## Make sure you have Deno installed!
+## Make sure you have Deno installed
+
 Once you download the source code and you have [Deno](https://deno.com/) installed you need to make a file to store your API keys in.
 
 ## API Keys
+
 You should have gotten an API key from the Bot Father on Telegram to run your bot, and an E621 API key to get data from [e621](https://e621.net).  Take those two keys and stick them in a `.txt` file in any order, **nothing else should be in the file except your the API keys!!**.  You can name the text file anything you want just remember where you put it in your file system.
 
 ## Run the Bot
+
 After you:
+
 * Download the source code
 * Install [Deno](https://deno.com/)
 * Obtain your API keys
@@ -50,7 +55,8 @@ After you:
 
  You are ready to run your bot!  Run the helper script and point it to the text file you created containing your keys.  `./run.sh /path/to/textfile/your_keys.txt`.  The bot should not be running.  Test it by trying to run `/start` in the chat with your bot in Telegram.
 
-# LIMITATIONS!!
+## LIMITATIONS
+
 Due to limitations in Telegram posts with the **.swf** and **.webp** file types won't show up in the bot.
 
 Due to limitations in Telegram bots can't send files more than **50Mb** in size; so **.mp4** files with a file size of more than **50Mb** will send the e621 link that points to that post, instead of the image.
