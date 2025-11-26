@@ -37,6 +37,7 @@ Deno.test(function getFileExtensionsTest() {
 
 // });
 
+// TODO: Expand this test to test for each possible key word case
 /**
  * Test for E621Bot.parseInlineQuery(query: string, urlBuilder: E621UrlBuilderPosts)
  */
