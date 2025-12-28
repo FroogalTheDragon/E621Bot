@@ -232,14 +232,14 @@ if (import.meta.main) {
       });
     });
 
-    yiffBot.catch(async (err) => {
-      await console.log(
-        `E621Bot Error: ${err.message}:${err.ctx.chosenInlineResult} Fuck You!!`,
+    yiffBot.catch((err) => {
+      console.error(
+        `E621Bot Error: ${err.message}:${err.ctx.chosenInlineResult}`,
       );
     });
     yiffBot.start();
   } catch (error) {
-    console.log(
+    console.error(
       `Encountered and error while trying to start the bot: ${error}`,
     );
   }
