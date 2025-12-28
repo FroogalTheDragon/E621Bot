@@ -54,6 +54,7 @@ export class E621Bot extends Bot {
   }
 
   /**
+   * // Parse the inline query by spaces
    * @param query
    * @param request_builder
    * @returns
