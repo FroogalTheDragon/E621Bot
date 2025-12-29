@@ -56,8 +56,6 @@ fi
 case $run in
     "dev") deno run dev;;
     "test") deno run test;;
-    "bin") deno run bin;; # Build a binary in ./bin
-    "bin-arm") deno run deno bin-arm;;
     "help") printHelp;;
-    *) echo "Invalid option detected: $run, Expecting on of these arguments: [dev, test, bin, bin-arm]";;
+    *) echo "Invalid option detected: $run, Expecting on of these arguments: [dev, test, help]";;
 esac
