@@ -1,17 +1,17 @@
 export interface E621UrlBuilder {
-    baseUrl: string;
-    limit?: number;
-    page?: number;
-    endpoint: string;
-    buildUrl(): string;
+  baseUrl: string;
+  limit?: number;
+  page?: number;
+  endpoint: string;
+  buildUrl(): string;
 }
 
 export interface Pool {
-    id: number,
-    name: string,
-    url: string,
-    thumbnailUrl: string,
-    post_ids: string[]
+  id: number;
+  name: string;
+  url: string;
+  thumbnailUrl: string;
+  post_ids: string[];
 }
 
 export interface Post {
@@ -30,7 +30,7 @@ export interface Post {
     url: string;
   };
   tags: Tags;
-  [key: string]: Tags | string | number | File | Preview
+  [key: string]: Tags | string | number | File | Preview;
 }
 
 export interface Tags {
@@ -43,17 +43,17 @@ export interface Tags {
   invalid: string[];
   lore: string[];
   meta: string[];
-  [key: string]: string[]
+  [key: string]: string[];
 }
 
 export interface File {
   ext: string;
   url: string;
   size: number;
-  [key: string]: string | number
+  [key: string]: string | number;
 }
 
 export interface Preview {
   url: string;
-  [key: string]: string
+  [key: string]: string;
 }

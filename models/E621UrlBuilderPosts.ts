@@ -7,10 +7,10 @@ import { E621UrlBuilder } from "./interfaces.ts";
  */
 export class E621UrlBuilderPosts implements E621UrlBuilder {
   baseUrl: string;
-  endpoint: string
+  endpoint: string;
   limit?: number;
   date?: string;
-  page: number
+  page: number;
   tags?: string[];
   fileType?: string;
   rating?: string;
@@ -62,9 +62,9 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
       this.fileType,
       this.order,
     );
-    
+
     // Return list of tags separated by '+'
-    return `?tags=${tags.filter(tag => tag != null && tag !== "").join('+')}`;
+    return `?tags=${tags.filter((tag) => tag != null && tag !== "").join("+")}`;
   }
 
   /**
@@ -77,7 +77,7 @@ export class E621UrlBuilderPosts implements E621UrlBuilder {
 
   /**
    * Get the file extension of the file or url passed to it.
-   * @param file 
+   * @param file
    * @returns string file extension
    */
   getFileExtensions(file: string) {

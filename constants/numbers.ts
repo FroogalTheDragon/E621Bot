@@ -36,7 +36,7 @@ export const POOLS_CACHE_TIME = 300;
 /**
  * The binary equivalent of 1 Megabyte
  */
-export const ONE_MEGABYTE = 1_048_576
+export const ONE_MEGABYTE = 1_048_576;
 
 /**
  * How long to wait between sending GET requests in milliseconds
