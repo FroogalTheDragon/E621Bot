@@ -1,6 +1,5 @@
-CREATE TABLE IF NOT EXISTS blacklist_db (
+CREATE TABLE IF NOT EXISTS user_db (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    telegramId BIGINT NOT NULL,
-    timestamp BIGINT NOT NULL,
-    blacklisted_tags TEXT
+    telegram_id BIGINT NOT NULL UNIQUE,
+    blacklist TEXT DEFAULT 'gore,scat,watersports,young,loli,shota' -- Default blacklist for every user on e621
 );

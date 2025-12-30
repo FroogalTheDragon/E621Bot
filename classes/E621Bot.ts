@@ -1,40 +1,47 @@
 import { Bot, InlineQueryResultBuilder } from "grammy";
+import {
+  Conversation,
+  type ConversationFlavor,
+  conversations,
+  createConversation,
+} from "@grammyjs/conversations";
 import { InlineQueryResult } from "grammy/types";
 import { E621UrlBuilderPosts } from "./E621UrlBuilderPosts.ts";
 import { ONE_MEGABYTE } from "../constants/numbers.ts";
 import { E621UrlBuilderPools } from "./E621UrlBuilderPools.ts";
 import { poolSearch } from "../constants/urls.ts";
-import { Post } from "./interfaces.ts";
-import { Pool } from "./interfaces.ts";
+import { Post } from "../interfaces.ts";
+import { Pool } from "../interfaces.ts";
 import * as strings from "../constants/strings.ts";
 import * as urls from "../constants/urls.ts";
 import * as numbers from "../constants/numbers.ts";
+import { edit_blacklist } from "../handlers/edit_blacklist.ts";
+import { Context } from "grammy";
+
+type e621BotContext = Context & ConversationFlavor<Context> & Conversation;
 
 /**
  * E621Bot can get streams of images based on a users inline query
  */
-export class E621Bot extends Bot {
+export class E621Bot extends Bot<e621BotContext> {
   telegramtelegramApiKey: string;
   e621ApiKey: string;
-  blacklist: string[];
-  blacklistPath: string;
   hits: number;
   last_hit_time?: string;
   constructor(
     telegramApiKey: string,
     e621ApiKey: string,
-    blacklist: string[],
-    blacklistPath: string = "./blacklist.txt",
     hits: number = 0,
     last_hit_time?: string,
   ) {
     super(telegramApiKey);
     this.telegramtelegramApiKey = telegramApiKey;
     this.e621ApiKey = e621ApiKey;
-    this.blacklist = blacklist;
-    this.blacklistPath = blacklistPath;
     this.hits = hits;
     this.last_hit_time = last_hit_time;
+
+    this.use(conversations());
+    this.use(createConversation(edit_blacklist));
   }
 
   /**
@@ -227,9 +234,8 @@ export class E621Bot extends Bot {
     return urlBuilder;
   }
 
-  processPosts(posts: Post[]): InlineQueryResult[] {
+  processPosts(posts: Post[], blacklistedTags: string[]): InlineQueryResult[] {
     const inlineQueryResults: InlineQueryResult[] = [];
-
     post_loop:
     for (const post in posts) {
       const tagMatrix: string[][] = [];
@@ -239,9 +245,11 @@ export class E621Bot extends Bot {
       });
       const tags = tagMatrix.flat();
 
+      console.log(this.buildBlacklistRegex(blacklistedTags));
+
       // Check for blacklisted tags
       for (const tag in tags) {
-        if (this.buildBlacklistRegex()?.test(tags[tag])) {
+        if (this.buildBlacklistRegex(blacklistedTags).test(tags[tag])) {
           console.log("Blacklisted found skipping post!");
           continue post_loop; // Skip this post if a blacklisted tag was found
         }
@@ -342,8 +350,8 @@ export class E621Bot extends Bot {
     return bytes / ONE_MEGABYTE; // Divide number of bytes by the number of bytes equal to one megabytes
   }
 
-  buildBlacklistRegex(): RegExp | null {
-    if (this.blacklist.length === 0) return null;
-    return new RegExp("(" + this.blacklist.join("|") + ")");
+  buildBlacklistRegex(blacklistedTags: string[]): RegExp {
+    if (blacklistedTags.length === 0) return new RegExp("");
+    return new RegExp("(" + blacklistedTags.join("|") + ")");
   }
 }

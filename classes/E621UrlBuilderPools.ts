@@ -1,5 +1,5 @@
 import { POOLS_PAGE_SIZE } from "../constants/numbers.ts";
-import { E621UrlBuilder } from "./interfaces.ts";
+import { E621UrlBuilder } from "../interfaces.ts";
 import * as urls from "../constants/urls.ts";
 
 export class E621UrlBuilderPools implements E621UrlBuilder {

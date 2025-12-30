@@ -1,23 +1,41 @@
 import { E621Bot } from "./classes/E621Bot.ts";
 import { E621UrlBuilderPosts } from "./classes/E621UrlBuilderPosts.ts";
 import { E621UrlBuilderPools } from "./classes/E621UrlBuilderPools.ts";
-import { Post } from "./models/interfaces.ts";
-import { Pool } from "./models/interfaces.ts";
+import { Post } from "./interfaces.ts";
+import { Pool } from "./interfaces.ts";
 import * as numbers from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
 import * as strings from "./constants/strings.ts";
+import { existsSync } from "node:fs";
+import { createDatabase } from "./db/utils/createDb.ts";
+import {
+  userExists as userExists,
+  getUserByTelegramId as getUserByTelegramId,
+  insertUser as insertUser,
+} from "./models/user.ts";
 
 if (import.meta.main) {
   try {
-    // Load the blacklist
-    const decoder = new TextDecoder("utf-8");
-    const blackListBytes = await Deno.readFile(strings.BLACKLIST_PATH);
-    const blacklist = decoder.decode(blackListBytes).split("\n"); // Separate blacklist into an array
+    // Create the directory structure create it and the db it its not there.
+    if (!existsSync(strings.DB_FILE)) {
+      if (!existsSync("db/prod_db")) {
+        Deno.mkdir("db/prod_db", { recursive: true });
+      }
+      console.log("Creating directory structure");
+      Deno.mkdir("db/prod_db", { recursive: true });
+
+      console.log("Attempting to create blacklist database");
+      if (!createDatabase(strings.DB_FILE)) {
+        throw new Error(`Failed to create blacklist DB`);
+      }
+      console.log("Database created!");
+    } else {
+      console.log(`Database found at ${strings.DB_FILE}!`);
+    }
 
     const yiffBot = new E621Bot(
       Deno.env.get("TELEGRAM_BOT_KEY") || "",
       Deno.env.get("E621_API_KEY") || "",
-      blacklist,
     );
 
     yiffBot.command("start", async (ctx) =>
@@ -37,6 +55,20 @@ if (import.meta.main) {
       await ctx.reply(
         `I have processed ${yiffBot.hits} requests, and I was last used at ${yiffBot.last_hit_time}`,
       );
+    });
+
+    yiffBot.command("blacklist", async (ctx) => {
+      const user = getUserByTelegramId(ctx.from?.id!, strings.DB_FILE);
+      if (user) {
+        await ctx.reply(
+          `This is your current blacklist: \n <b>${user.blacklist.join("\n")}</b>`,
+          {parse_mode: "HTML"}
+        );
+      }
+    });
+
+    yiffBot.command("edit_blacklist", async (ctx) => {
+      await ctx.conversation.enter("edit_blacklist");
     });
 
     yiffBot.command("help", async (ctx) => {
@@ -152,6 +184,12 @@ if (import.meta.main) {
      * Handle general searches
      */
     yiffBot.on("inline_query", async (ctx) => {
+      // Create new user if not exists
+      if (!userExists(ctx.from.id, strings.DB_FILE)) {
+        insertUser({ telegramId: ctx.from.id, blacklist: [] }, strings.DB_FILE);
+      }
+      const user = getUserByTelegramId(ctx.from.id, strings.DB_FILE);
+
       // Parse the inline query and create a new URL builder object based on the query
       const urlBuilder = yiffBot.parseInlineQuery(
         ctx.inlineQuery.query,
@@ -184,7 +222,7 @@ if (import.meta.main) {
       // Grab our data
       const request = await yiffBot.sendRequest(urlBuilder.buildUrl());
       const requestJson = await request.json();
-      const postsJson = requestJson.posts; // An array of 320 posts
+      const postsJson = requestJson.posts; // An array of 50 posts
 
       // console.log(postsJson[0]);
 
@@ -207,7 +245,8 @@ if (import.meta.main) {
         },
       );
 
-      const inlineResults = yiffBot.processPosts(posts);
+      // Process and filter posts through blacklist
+      const inlineResults = yiffBot.processPosts(posts, user!.blacklist);
       console.log(`Number of Results Retrieved: ${inlineResults.length}`);
 
       let resultBatch;
@@ -237,7 +276,8 @@ if (import.meta.main) {
         `E621Bot Error: ${err.message}:${err.ctx.chosenInlineResult}`,
       );
     });
-    yiffBot.start();
+    await yiffBot.start();
+    console.log("Bot Started!");
   } catch (error) {
     console.error(
       `Encountered and error while trying to start the bot: ${error}`,

@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert/equals";
 import { API_PAGE_SIZE } from "../constants/numbers.ts";
-import { E621UrlBuilderPosts } from "../models/E621UrlBuilderPosts.ts";
+import { E621UrlBuilderPosts } from "../classes/E621UrlBuilderPosts.ts";
 
 Deno.test(function buildUrlPostsTest() {
   const testUrl =
