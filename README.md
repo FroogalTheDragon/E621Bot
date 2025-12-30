@@ -18,7 +18,7 @@ This bot has a set of keywords that can be used to augment the results of your
 query. They can be used anywhere in the query.
 
 You can use these key words in combination with tags to search anything you want
-on [e621]("https://www.e621.net").
+on [e621](https://www.e621.net).
 
 - **today** - Will get you the images uploaded today
 - **yesterday** - Will get you images uploaded yesterday
