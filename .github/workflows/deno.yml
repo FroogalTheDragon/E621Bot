@@ -21,6 +21,10 @@ jobs:
     test:
         runs-on: ubuntu-latest
 
+        env:
+            TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
+            E621_API_KEY: ${{ secrets.E621_API_KEY }}
+
         steps:
             - name: Setup repo
               uses: actions/checkout@v4
@@ -40,7 +44,3 @@ jobs:
 
             - name: Run tests
               run: deno test -A
-
-            env: 
-                TELEGRAM_BOT_KEY: ${{ secrets.TELEGRAM_BOT_KEY }}
-                E621_API_KEY: ${{ secrets.E621_API_KEY }}
