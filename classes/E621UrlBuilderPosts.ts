@@ -1,6 +1,6 @@
 import * as urls from "../constants/urls.ts";
 import { API_PAGE_SIZE } from "../constants/numbers.ts";
-import { E621UrlBuilder } from "./interfaces.ts";
+import { E621UrlBuilder } from "../interfaces.ts";
 
 /**
  * Build an e621 URL based on parameters passed to this class

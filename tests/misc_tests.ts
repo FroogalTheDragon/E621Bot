@@ -1,6 +1,6 @@
 import { assertEquals } from "@std/assert/equals";
-import { E621Bot } from "../models/E621Bot.ts";
-import { E621UrlBuilderPools } from "../models/E621UrlBuilderPools.ts";
+import { E621Bot } from "../classes/E621Bot.ts";
+import { E621UrlBuilderPools } from "../classes/E621UrlBuilderPools.ts";
 import * as urls from "../constants/urls.ts";
 
 // TODO: Write test for processPosts()
@@ -17,7 +17,6 @@ Deno.test(async function sendRequestTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
-    new Array<string>(),
   );
   const testResponse = await testBot.sendRequest(testUrl);
   await testResponse.body?.cancel(); // Cancel test request
@@ -28,7 +27,6 @@ Deno.test(function calcMegabytesTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
-    new Array<string>(),
   );
   const testValue = 1024; // bytes
   assertEquals(Math.ceil(testBot.calcMegabytes(testValue)), 1);
@@ -43,10 +41,9 @@ Deno.test(function buildBlacklistRegexTest() {
   const testBot = new E621Bot(
     Deno.env.get("TELEGRAM_BOT_KEY") || "",
     Deno.env.get("E621_API_KEY") || "",
-    blacklist,
   );
   assertEquals(
-    testBot.buildBlacklistRegex(),
+    testBot.buildBlacklistRegex(blacklist),
     /(feces|murder|waterworks)/,
   );
 });
