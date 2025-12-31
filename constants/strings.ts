@@ -29,6 +29,22 @@ The words dragon, gryphon, today, random, and safe will return images with <b><u
 
 You can find a list of valid tags <a href="https://e621.net/tags">here</a> you can mix and match the key words and the tags in any way you like!
 
+<b><u>Commands</u></b>
+E621Bot comes with a number of commands.  These commands must be used in a direct chat with the bot.  As this bot is mostly an inline bot, you mostly interact with it by typing <code>@e621bot your query here</code> while in another chat to interact with it.  To use commands open a direct message chat with the bot, and from there you can use slash commands (<code>/command</code>).  e621Bot currently has 6 commands.
+
+<b><code>/start</code></b> Starts the bot
+<b><code>/help</code></b> Show a help message
+<b><code>/info</code></b> Show info about the bot
+<b><code>/hits</code></b> Show statistical info about the bot
+<b><code>/blacklist</code></b> Show your blacklisted tags
+<b><code>/edit_blacklist</code></b> Edit your blacklisted tags
+
+<b><u>Blacklist</u></b>
+e621 has a <b>LOT</b> of tags, you may not be comfortable with all of them.  That's where your blacklist comes in!  You can use the blacklist to filter posts out with tags that you don't want to see.  e621 itself <a href="https://e621.net/help/blacklist">has default blacklist settings]</a> in place for all guest users, this is the same default blacklist the bot will start you out with when you first use the bot.
+
+<b><u>Editing your blacklist</u></b>
+You can edit this default list by using <code>/edit_blacklist</code>, you will be sent your current blacklist which you can copy and paste into the chat.  From there you can edit it, and send it back to the bot.  The bot will save your blacklist, and display the updated blacklist so you can verify the changes.
+
 <b><u>LIMITATIONS!!</u></b>
 Due to limitations in Telegram posts with the <b>.swf</b> and <b>.webp</b> file types won't show up in the bot.
 
@@ -36,7 +52,7 @@ Due to limitations in Telegram bots can't send files more than 50Mb in size; so 
 `;
 
 export const infoString = `
-This is the Yiff bot, use this bot to find the latest and greatest furry images from the interwebz.\n
+This is the e621 bot, use this bot to find the latest and greatest furry images from the interwebz.\n
 <b>It's important to know that a lot of these images are rated <u>EXPLICIT</u> and so this bot should not be used by anyone under the age of 18.</b>
 `;
 
