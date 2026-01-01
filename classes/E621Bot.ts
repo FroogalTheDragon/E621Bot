@@ -85,11 +85,6 @@ export class E621Bot extends Bot<e621BotContext> {
         continue;
       }
 
-      // if (/(safe|questionable|explicit)/.test(queryTags[tag])) {
-      //   urlBuilder.rating = encodeURIComponent(`rating:${queryTags[tag]}`);
-      //   continue;
-      // }
-
       if (/(score|favcount|random|hot)/.test(queryTags[tag])) {
         urlBuilder.order = encodeURIComponent(`order:${queryTags[tag]}`);
         continue;
@@ -99,11 +94,6 @@ export class E621Bot extends Bot<e621BotContext> {
         urlBuilder.fileType = encodeURIComponent(`type:${queryTags[tag]}`);
         continue;
       }
-
-      // // Ignore ratings in the query since we are pulling the rating from the db
-      // if (/(rating:(s|safe)|rating:(q|questionable)|rating:(e|explicit))/.test(queryTags[tag])) {
-      //   continue;
-      // }
       parsedTags.push(queryTags[tag]);
     }
     urlBuilder.tags = parsedTags;
