@@ -240,7 +240,7 @@ export class E621Bot extends Bot<e621BotContext> {
       });
       const tags = tagMatrix.flat();
 
-      console.log(this.buildBlacklistRegex(blacklistedTags));
+      // console.log(this.buildBlacklistRegex(blacklistedTags));
 
       // Check for blacklisted tags
       for (const tag in tags) {
