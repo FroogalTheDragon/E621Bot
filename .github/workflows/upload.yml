@@ -1,5 +1,9 @@
-name: Remote SSH Command
-on: [push]
+name: Upate E621Bot
+on:
+  push:
+    branches: ["master"]
+
+
 jobs:
   build:
     name: Build
