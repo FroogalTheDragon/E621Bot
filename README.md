@@ -40,7 +40,7 @@ The words **dragon**, **gryphon**, **today**, **random**, and **safe** will
 return images with **dragons** and **gryphons** in them that were uploaded
 **today** that are **randomly** ordered with a rating of **safe**
 
-You can find a list of valid tags [e621]("https://www.e621.net") you can mix and
+Here is a list of valid [e621 tags](https://e621.net/tags), and you can mix and
 match the key words and the tags in any way you like!
 
 ## Commands
