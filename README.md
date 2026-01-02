@@ -57,6 +57,7 @@ can use slash commands (`/command`). e621Bot currently has 6 commands.
 - `/hits` Show statistical info about the bot
 - `/blacklist` Show your blacklisted tags
 - `/edit_blacklist` Edit your blacklisted tags
+- `/rating [rating]` Change rating
 
 ## Blacklist
 
@@ -73,6 +74,39 @@ You can edit this default list by using `/edit_blacklist`, you will be sent your
 current blacklist which you can copy and paste into the chat. From there you can
 edit it, and send it back to the bot. The bot will save your blacklist, and
 display the updated blacklist so you can verify the changes.
+
+## Rating
+
+E621 has three ratings:
+
+- Explicit
+- Questionable
+- Safe
+
+### Explicit (Adult)
+
+Any image depicting any of the content listed in the [Explicit (Adult)](https://e621.net/help/ratings#explicit) section of the [e621 ratings help page](https://e621.net/help/ratings) is considered **NSFW/18+** content..
+
+### Questionable (Mature)
+
+This rating should be free of the content found under Explicit, but may include the content listed in the [Questionable (Mature)](https://e621.net/help/ratings#questionable) section of the [e621 ratings help page](https://e621.net/help/ratings).  Some of the content might still be considered **NSFW** in some places.
+
+
+### Safe (General)
+
+Finally, this rating should be free of any of the content listed above, and may include the content listed in the [Safe (General)](https://e621.net/help/ratings#safe) section of the [e621 ratings help page](https://e621.net/help/ratings).  This content should be considered **SFW** in most settings.
+
+You can filter search results by querying for rating:s, rating:q, or rating:e for safe, questionable, and explicit posts, respectively. You can also combine them with other tags and they work as expected.
+
+## Changeing your rating
+
+To change your rating use `/rating [rating]` to change the rating of the images retrieved by the bot.  Replace `[rating]` with the rating you want to set it to.
+
+#### Available Ratings:
+
+- `/rating explicit` shorthand `/rating e`
+- `/rating questionable` shorthand `/rating q`
+- `/rating safe` shorthand `/rating s`
 
 ## How do I setup the bot?
 
