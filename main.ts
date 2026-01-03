@@ -24,7 +24,7 @@ if (import.meta.main) {
     // Create the directory structure create it and the db it
     if (!existsSync(strings.DB_BASEDIR)) {
       console.log("Creating directory structure");
-      Deno.mkdirSync(Deno.realPathSync(config.db.prod), { recursive: true });
+      Deno.mkdirSync(Deno.realPathSync(Deno.realPathSync(config.db.prod)), { recursive: true });
 
       console.log("Creating Database");
       createDatabase(strings.DB_FILE);
