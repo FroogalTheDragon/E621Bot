@@ -7,7 +7,7 @@ import * as numbers from "./constants/numbers.ts";
 import * as urls from "./constants/urls.ts";
 import * as strings from "./constants/strings.ts";
 import { existsSync } from "node:fs";
-import { createDatabase } from "./db/utils/createDb.ts";
+import { createDatabase } from "./utils/db/createDb.ts";
 import {
   getUserByTelegramId as getUserByTelegramId,
   insertUser as insertUser,
@@ -15,26 +15,24 @@ import {
   userExists as userExists,
 } from "./models/user.ts";
 import { DB_FILE } from "./constants/strings.ts";
+import config from "./bot_config.json" with { type: "json" };
+import { E621DatabaseError } from "./types/Error.ts";
 
 if (import.meta.main) {
+  console.log(config);
   try {
-    // Create the directory structure create it and the db it its not there.
-    if (!existsSync(strings.DB_FILE)) {
-      if (!existsSync("db/prod_db")) {
-        Deno.mkdir("db/prod_db", { recursive: true });
-      }
+    // Create the directory structure create it and the db it
+    if (!existsSync(strings.DB_BASEDIR)) {
       console.log("Creating directory structure");
-      Deno.mkdir("db/prod_db", { recursive: true });
+      Deno.mkdirSync(Deno.realPathSync(config.db.prod), { recursive: true });
 
-      console.log("Attempting to create blacklist database");
-      if (!createDatabase(strings.DB_FILE)) {
-        throw new Error(`Failed to create blacklist DB`);
-      }
-      console.log("Database created!");
+      console.log("Creating Database");
+      createDatabase(strings.DB_FILE);
     } else {
-      console.log(`Database found at ${strings.DB_FILE}!`);
+      console.log(`Database found at ${Deno.realPathSync(strings.DB_FILE)}`);
     }
 
+    console.log("Creating bot instance");
     const yiffBot = new E621Bot(
       Deno.env.get("TELEGRAM_BOT_KEY") || "",
       Deno.env.get("E621_API_KEY") || "",
@@ -322,9 +320,15 @@ if (import.meta.main) {
     });
     await yiffBot.start();
     console.log("Bot Started!");
-  } catch (error) {
-    console.error(
-      `Encountered and error while trying to start the bot: ${error}`,
-    );
+  } catch (err) {
+    if (err instanceof Deno.errors.PermissionDenied) {
+      console.error(
+        `Encountered an error while trying to start the bot: ${err}`,
+      );
+    } else if (err instanceof E621DatabaseError) {
+      console.error(
+        `There was a problem with the database while starting the bot: ${err}`,
+      );
+    }
   }
 }
