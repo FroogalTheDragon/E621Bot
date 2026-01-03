@@ -1,0 +1,11 @@
+{
+  "db": {
+    "base_directory": "db",
+    "prod": "db/prod",
+    "test": "db/test",
+    "db_file": "db/prod/user.db",
+    "test_db_file": "db/test/test_user.db"
+  },
+
+  "key_file": "../../.secrets/keys_nmdergbot.txt"
+}
