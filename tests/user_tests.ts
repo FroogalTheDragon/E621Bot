@@ -1,6 +1,5 @@
 import { existsSync } from "node:fs";
-import { TEST_DB_FILE } from "../constants/strings.ts";
-import { createUserDb } from "../db/migration.ts";
+import { createUserDb } from "../utils/db/migration.ts";
 import {
   deleteUser,
   getUserByTelegramId as getUserByTelegramId,
@@ -12,6 +11,14 @@ import {
 import { User } from "../types/User.ts";
 import { assertEquals } from "@std/assert/equals";
 import { assertObjectMatch } from "@std/assert/object-match";
+import config from "../bot_config.json" with {type: "json"};
+
+const TEST_DB_DIR = `${Deno.cwd()}/${config.db.test}`;
+const TEST_DB_FILE = `${Deno.cwd()}/${config.db.test_db_file}`;
+
+if (!existsSync(TEST_DB_DIR)) {
+  Deno.mkdirSync(TEST_DB_DIR);
+}
 
 const testUser: User = {
   id: 1,
