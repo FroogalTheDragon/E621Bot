@@ -70,4 +70,5 @@ export const keywordsRegex = "(id|creator|active|inactive|category|order)";
 
 // DB strings
 export const DB_BASEDIR = `${Deno.cwd()}/${config.db.base_directory}`;
+export const DB_PROD = `${Deno.cwd()}/${config.db.prod}`;
 export const DB_FILE = `${Deno.cwd()}/${config.db.db_file}`;

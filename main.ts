@@ -20,18 +20,19 @@ import { E621DatabaseError } from "./types/Error.ts";
 
 if (import.meta.main) {
   console.log(config);
+  // const cfg = config as Config;
   try {
     // Create the directory structure create it and the db it
-    if (!existsSync(strings.DB_BASEDIR)) {
+    if (!existsSync(strings.DB_FILE)) {
       console.log("Creating directory structure");
-      Deno.mkdirSync(Deno.realPathSync(Deno.realPathSync(config.db.prod)), {
+      Deno.mkdirSync(config.db.prod, {
         recursive: true,
       });
 
       console.log("Creating Database");
       createDatabase(strings.DB_FILE);
     } else {
-      console.log(`Database found at ${Deno.realPathSync(strings.DB_FILE)}`);
+      console.log(`Database found at ${strings.DB_FILE}`);
     }
 
     console.log("Creating bot instance");
@@ -238,7 +239,7 @@ if (import.meta.main) {
         new E621UrlBuilderPosts(),
       );
 
-      // Stop processing if user types in "sp *"
+      // Stop processing if user types in "searchpools *"
       if (/searchpools */.test(ctx.inlineQuery.query)) return;
       if (ctx.inlineQuery.query == "") {
         urlBuilder.date = urls.date.today;
@@ -324,12 +325,20 @@ if (import.meta.main) {
     console.log("Bot Started!");
   } catch (err) {
     if (err instanceof Deno.errors.PermissionDenied) {
-      console.error(
-        `Encountered an error while trying to start the bot: ${err}`,
+      throw new Error(
+        `E621Bot failed to start: Encountered an error while trying to start the bot: ${err}`,
       );
     } else if (err instanceof E621DatabaseError) {
-      console.error(
-        `There was a problem with the database while starting the bot: ${err}`,
+      throw new Error(
+        `E621Bot failed to start: There was a problem with the database while starting the bot: ${err}`,
+      );
+    } else if (err instanceof Deno.errors.NotFound) {
+      throw new Error(
+        `E621Bot failed to start: There was a problem creating the database directory structure: ${err}`,
+      );
+    } else {
+      throw new Error(
+        `E621Bot encountered an unknown error during start up: ${err}`,
       );
     }
   }
