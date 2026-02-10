@@ -57,3 +57,14 @@ export interface Preview {
   url: string;
   [key: string]: string;
 }
+
+export interface Config {
+  db: {
+    base_directory: string;
+    prod: string;
+    test: string;
+    db_file: string;
+    test_db_file: string;
+  };
+  key_file: string;
+}
