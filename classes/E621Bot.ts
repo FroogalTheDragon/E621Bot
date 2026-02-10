@@ -17,6 +17,7 @@ import * as urls from "../constants/urls.ts";
 import * as numbers from "../constants/numbers.ts";
 import { edit_blacklist } from "../handlers/edit_blacklist.ts";
 import { Context } from "grammy";
+import { resolve } from "node:dns";
 
 type e621BotContext = Context & ConversationFlavor<Context> & Conversation;
 
@@ -256,6 +257,7 @@ export class E621Bot extends Bot<e621BotContext> {
             String(posts[post].id),
             posts[post].url,
           );
+          result.caption = posts[post].url; // Add the image source to the caption
           inlineQueryResults.push(result);
           break;
         }
@@ -264,6 +266,7 @@ export class E621Bot extends Bot<e621BotContext> {
             String(posts[post].id),
             posts[post].url,
           );
+          result.caption = posts[post].url; // Add the image source to the caption
           inlineQueryResults.push(result);
           break;
         }
@@ -273,6 +276,7 @@ export class E621Bot extends Bot<e621BotContext> {
             posts[post].url,
             posts[post].previewUrl,
           );
+          result.caption = posts[post].url; // Add the image source to the caption
           inlineQueryResults.push(result);
           break;
         }
