@@ -17,7 +17,6 @@ import * as urls from "../constants/urls.ts";
 import * as numbers from "../constants/numbers.ts";
 import { edit_blacklist } from "../handlers/edit_blacklist.ts";
 import { Context } from "grammy";
-import { resolve } from "node:dns";
 
 type e621BotContext = Context & ConversationFlavor<Context> & Conversation;
 

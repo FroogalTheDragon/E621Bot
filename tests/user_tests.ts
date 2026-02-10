@@ -11,7 +11,7 @@ import {
 import { User } from "../types/User.ts";
 import { assertEquals } from "@std/assert/equals";
 import { assertObjectMatch } from "@std/assert/object-match";
-import config from "../bot_config.json" with {type: "json"};
+import config from "../bot_config.json" with { type: "json" };
 
 const TEST_DB_DIR = `${Deno.cwd()}/${config.db.test}`;
 const TEST_DB_FILE = `${Deno.cwd()}/${config.db.test_db_file}`;
