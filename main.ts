@@ -15,7 +15,7 @@ import {
   userExists as userExists,
 } from "./models/user.ts";
 import { DB_FILE } from "./constants/strings.ts";
-import config from "./bot_config.json" with { type: "json" };
+import config from "./config.json" with { type: "json" };
 import { E621DatabaseError } from "./types/Error.ts";
 
 if (import.meta.main) {

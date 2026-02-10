@@ -1,4 +1,4 @@
-import config from "../../bot_config.json" with { type: "json" };
+import config from "../../config.json" with { type: "json" };
 
 export const startString = `
 Bot Started <b>This is an <u>Explicit 18+</u> bot</b> and should only be used by <b>Those who are <u>18 years old or above</u></b> run /info for more information about this bot!

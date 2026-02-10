@@ -1,4 +1,4 @@
-import config from "../bot_config.json" with { type: "json" };
+import config from "../config.json" with { type: "json" };
 import { assertEquals } from "@std/assert/equals";
 import { DatabaseSync } from "node:sqlite";
 import { createUserDb } from "../utils/db/migration.ts";
