@@ -68,3 +68,10 @@ export interface Config {
   };
   key_file: string;
 }
+
+export interface Keys {
+  keys: {
+    bot?: string, // Nullable becuase Deno.env.get() can return string | undefined
+    e621?: string // Same ^
+  }
+}
