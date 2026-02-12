@@ -17,6 +17,7 @@ import {
 import { DB_FILE } from "./constants/strings.ts";
 import config from "./config.json" with { type: "json" };
 import { E621DatabaseError } from "./types/Error.ts";
+import { loadKeys } from "./utils/keys.ts";
 
 if (import.meta.main) {
   console.log(config);
@@ -34,6 +35,10 @@ if (import.meta.main) {
     } else {
       console.log(`Database found at ${strings.DB_FILE}`);
     }
+
+    console.log("Loading API keys");
+
+    loadKeys(config.key_file);
 
     console.log("Creating bot instance");
     const yiffBot = new E621Bot(
